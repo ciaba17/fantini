@@ -13,7 +13,7 @@ int main() {
     while (window.isOpen()) {
 
         while (window.pollEvent(event)) {
-            s
+            //buonasera arinci
         }
     }
 }
