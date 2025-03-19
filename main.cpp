@@ -14,6 +14,7 @@ int main() {
 
         while (window.pollEvent(event)) {
             //buonasera arinci
+            //giga chad sigma
         }
     }
 }
