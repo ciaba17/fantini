@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <SFML/Graphics.hpp>
 
 //ciao
@@ -19,3 +20,5 @@ int main() {
     }
 }
 //uca
+=======
+>>>>>>> 0dba695 (aggiunta classe player e bottone)
