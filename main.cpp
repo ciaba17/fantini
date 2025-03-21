@@ -20,18 +20,43 @@ struct Player {
     }
 };
 
+
 struct Bottone {
+    bool premuto = false;
     float x, y;
+    float width, height;
     string testo;
+    sf::Color colore;
     sf::RectangleShape shape;
+    sf::FloatRect area;
     
+    Bottone(float x, float y, float width, float height, string testo, sf::Color colore) {
+        this -> x = x;
+        this -> y = y;
+        this -> testo = testo;
+        this -> width = width;
+        this -> height = height;
+        area = sf::FloatRect(x, y, width, height);
+
+        
+        shape.setPosition(sf::Vector2f(x, y));
+        shape.setSize(sf::Vector2f(width, height));
+        shape.setFillColor(colore);
+    }
+
+    void drawBottone() {
+        window.draw(shape);
+    }
 
 };
 
 
 bool suTasto();
 
+
 vector<Player> players;
+vector<Bottone> bottoni;
+
 
 int main() {
     srand(time(NULL));
@@ -46,7 +71,9 @@ int main() {
 }
 
 bool suTasto() {
-    if (sf::Mouse::getPosition(window) > ) {
-        
+    for (auto bottone : bottoni) { // Controlla tutti i bottoni
+        if (bottone.area.contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)))) { // Vede se il mouse si trova all'interno di un bottone
+            return true;
+        }
     }
 }
