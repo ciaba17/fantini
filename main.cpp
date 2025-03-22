@@ -13,11 +13,6 @@ sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dei fantini"); // Crea
 sf::Event event; // Crea gestore event
 sf::Font font; 
 
-sf::Texture TmenuWP;
-//sf::Texture Tmappa;
-
-
-
 struct Player {
     string nome;
     float x, y;
@@ -119,9 +114,6 @@ bool suBottone();
 int tiraDadi(int nDadi,int faccieDado);
 
 
-
-
-
 bool menu = true;
 bool staTirandoDado = false;
 bool partita = false;
@@ -131,6 +123,11 @@ int main() {
     srand(time(NULL));
     // Carica il font per i testi
     font.loadFromFile("data/arial.ttf");
+    // Crea i players
+    players.push_back(Player("Giocatore", sf::Color::Red));
+    players.push_back(Player("CPU 1", sf::Color::Blue));
+    players.push_back(Player("CPU 2", sf::Color::Green));
+    players.push_back(Player("CPU 3", sf::Color::Yellow));
 
     // Crea bottone start
     bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
@@ -236,8 +233,8 @@ bool suBottone() {
     return false;
 }
 
-void turnoPlayer(int nPlayer) {
 
+void turnoPlayer(int nPlayer) {
     int risultatoDado = 0;
 
     //mettere animazione di cambio turno
@@ -246,6 +243,7 @@ void turnoPlayer(int nPlayer) {
     
     while (staTirandoDado) {
         //mettere che appare il dado e aspetta che clicchi lo schermo per tirare
+        staTirandoDado = false;
     }
 
     risultatoDado = tiraDadi(1, 6);
@@ -259,8 +257,8 @@ void turnoPlayer(int nPlayer) {
     controlloCasella(nPlayer);
 }
 
+
 int tiraDadi(int nDadi,int faccieDado) {
-    
     int totale = 0;
 
     //genera e somma i numeri casuali dei dadi
@@ -270,6 +268,7 @@ int tiraDadi(int nDadi,int faccieDado) {
 
     return totale;
 }
+
 
 void controlloCasella(int nPlayer) {
     switch (players[nPlayer].casella){
