@@ -12,8 +12,6 @@ const float HEIGHT = 1080;
 sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dei fantini"); // Crea l'oggetto finestra
 sf::Event event; // Crea gestore event
 sf::Font font; 
-sf::Texture menuWPT;
-sf::Sprite menuWP;
 
 
 struct Player {
@@ -27,7 +25,6 @@ struct Player {
         this -> colore = colore;
     }
 };
-
 
 struct Bottone {
     bool premuto = false;
@@ -45,7 +42,7 @@ struct Bottone {
         this->width = width;
         this->height = height;
     
-        area = sf::FloatRect(x, y, width, height);
+        area = sf::FloatRect(x - width / 2, y - height / 2, width, height);
     
         shape.setSize(sf::Vector2f(width, height));
         shape.setOutlineColor(sf::Color::Black);
@@ -55,7 +52,7 @@ struct Bottone {
     
         testo.setFont(font);
         testo.setString(testoS);
-        testo.setCharacterSize(WIDTH / 18);
+        testo.setCharacterSize(width/3.4);
         testo.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = testo.getLocalBounds();
         testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
@@ -69,11 +66,45 @@ struct Bottone {
     }
 };
 
+struct Sprite {
+    float x, y;
+    sf::Texture texture;
+    sf::Sprite sprite;
+    string path;
+
+    Sprite(float x, float y) {
+        this->x = x;
+        this->y = y;
+    }
+    void setSprite(string path, float scale) {
+        if (!texture.loadFromFile(path)) {
+            std::cout << "Errore nel caricamento dell'immagine: " << path << std::endl;
+        }
+        sprite.setTexture(texture);
+        sprite.setPosition(x, y);
+    
+        // Ottieni la dimensione della texture
+        sf::Vector2u textureSize = texture.getSize();
+    
+        // Imposta l'origine dello sprite al centro
+        sprite.setOrigin(textureSize.x / 2.0f, textureSize.y / 2.0f);
+        sprite.setScale(scale, scale);
+    }
+
+    void draw() {
+        window.draw(sprite);
+    }
+
+};
+
+
 void input();
 void update();
 void draw();
 void drawMenu();
+void drawPartita();
 void drawBottoni();
+void drawSprites();
 
 bool suBottone();
 int tiraDadi(int nDadi,int faccieDado);
@@ -81,21 +112,26 @@ int tiraDadi(int nDadi,int faccieDado);
 
 vector<Player> players;
 vector<Bottone> bottoni;
+vector<Sprite> sprites;
 
 
 bool menu = true;
+bool partita = false;
 
 
 int main() {
     srand(time(NULL));
     // Carica il font per i testi
     font.loadFromFile("data/arial.ttf");
-    menuWPT.loadFromFile("data/menuWP.jpg");
-    menuWP.setTexture(menuWPT);
-    menuWP.setPosition(0,0);
-    sf::Vector2u textureSize = menuWPT.getSize();
-    menuWP.setScale(WIDTH / textureSize.x, HEIGHT / textureSize.y);
 
+    // Carica le texture e gli sprites
+    // Sfondo menu
+    sprites.push_back(Sprite(WIDTH/2, HEIGHT/2));
+    sprites[0].setSprite("data/menuWP.jpg", 1);
+    // Mappa
+    sprites.push_back(Sprite(WIDTH/2, HEIGHT/2));
+
+    // Crea bottone start
     bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
 
 
@@ -105,6 +141,8 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+        
             input();
         }
         
@@ -123,27 +161,28 @@ void input() {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && suBottone()) {
         if (menu) {
             menu = false;
+            partita = true;
             bottoni.erase(bottoni.begin());
         }
     }
-
 }
 
 
 void update() {
-    cerr << sf::Mouse::getPosition(window).x << "\t";
+
 }
 
 
 void draw() {
     window.clear();
+
     if (menu) {
         drawMenu();
     }
-
-    drawBottoni();
-
-
+    else if (partita) {
+        drawPartita();
+    }
+    
     window.display();
 }
 
@@ -162,32 +201,34 @@ void drawMenu() {
     sf::FloatRect textBounds = testo.getLocalBounds();
     testo.setOrigin(textBounds.width/2, textBounds.height/2);
     testo.setPosition(sf::Vector2f(WIDTH/2, HEIGHT/3));
-
-    window.draw(menuWP);
+    
+    sprites[0].draw();
     window.draw(shape);
     window.draw(testo);
+    bottoni[0].draw();
 }
 
 
-void drawBottoni() {
-    for (auto bottone : bottoni) {
-        bottone.draw();
-    }
+void drawPartita() {
+    sprites[1].draw();
+    
 }
 
 
 bool suBottone() {
-    for (auto &bottone : bottoni) { // Controlla tutti i bottoni
-        if (sf::Mouse::getPosition(window).x > bottone.x &&
-            sf::Mouse::getPosition(window).x < bottone.x + bottone.width &&
-            sf::Mouse::getPosition(window).y > bottone.y &&
-            sf::Mouse::getPosition(window).y < bottone.y + bottone.height) { // Vede se il mouse si trova all'interno di un bottone
+    for (auto& bottone : bottoni) { // Controlla tutti i bottoni
+        // Ottieni la posizione del mouse relativa alla finestra
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f mousePosInWindow = window.mapPixelToCoords(mousePos);
+
+        // Verifica se il mouse è sopra il bottone
+        if (bottone.area.contains(mousePosInWindow)) { // Vede se il mouse si trova all'interno di un bottone
             return true;
         }
     }
-
     return false;
 }
+
 
 
 int tiraDadi(int nDadi,int faccieDado){
@@ -195,7 +236,7 @@ int tiraDadi(int nDadi,int faccieDado){
     int totale = 0;
 
     //genera e somma i numeri casuali dei dadi
-    for(int i=0;i<nDadi;i++){
+    for(int i = 0; i < nDadi; i++){
         totale += rand() % faccieDado + 1; 
     }
 
