@@ -13,6 +13,10 @@ sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dei fantini"); // Crea
 sf::Event event; // Crea gestore event
 sf::Font font; 
 
+sf::Texture TmenuWP;
+//sf::Texture Tmappa;
+
+
 
 struct Player {
     string nome;
@@ -25,6 +29,8 @@ struct Player {
         this -> colore = colore;
     }
 };
+vector<Player> players;
+
 
 struct Bottone {
     bool premuto = false;
@@ -65,37 +71,38 @@ struct Bottone {
         window.draw(testo);
     }
 };
+vector<Bottone> bottoni;
+
 
 struct Sprite {
-    float x, y;
     sf::Texture texture;
     sf::Sprite sprite;
-    string path;
 
-    Sprite(float x, float y) {
-        this->x = x;
-        this->y = y;
-    }
-    void setSprite(string path, float scale) {
-        if (!texture.loadFromFile(path)) {
-            std::cout << "Errore nel caricamento dell'immagine: " << path << std::endl;
+    Sprite(float x, float y, float scale, const std::string& textureFile) {
+        if (!texture.loadFromFile(textureFile)) {
+            std::cerr << "Errore nel caricamento della texture: " << textureFile << std::endl;
         }
         sprite.setTexture(texture);
         sprite.setPosition(x, y);
-    
-        // Ottieni la dimensione della texture
-        sf::Vector2u textureSize = texture.getSize();
-    
-        // Imposta l'origine dello sprite al centro
-        sprite.setOrigin(textureSize.x / 2.0f, textureSize.y / 2.0f);
         sprite.setScale(scale, scale);
+        sf::Vector2u textureSize = texture.getSize();
+        sprite.setOrigin(textureSize.x / 2.0f, textureSize.y / 2.0f);
     }
 
     void draw() {
         window.draw(sprite);
     }
 
+    void setPosition(float x, float y) {
+        sprite.setPosition(x, y);
+    }
+
+    sf::Vector2f getPosition() {
+        return sprite.getPosition();
+    }
 };
+Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1.0f, "data/menuWP.jpg");
+Sprite mappa(WIDTH / 2, HEIGHT / 2, 1.0f, "data/mappa.png");
 
 
 void input();
@@ -112,9 +119,7 @@ bool suBottone();
 int tiraDadi(int nDadi,int faccieDado);
 
 
-vector<Player> players;
-vector<Bottone> bottoni;
-vector<Sprite> sprites;
+
 
 
 bool menu = true;
@@ -126,13 +131,6 @@ int main() {
     srand(time(NULL));
     // Carica il font per i testi
     font.loadFromFile("data/arial.ttf");
-
-    // Carica le texture e gli sprites
-    // Sfondo menu
-    sprites.push_back(Sprite(WIDTH/2, HEIGHT/2));
-    sprites[0].setSprite("data/menuWP.jpg", 1);
-    // Mappa
-    sprites.push_back(Sprite(WIDTH/2, HEIGHT/2));
 
     // Crea bottone start
     bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
@@ -195,11 +193,13 @@ void draw() {
 
 
 void drawMenu() {
+    // Rettangolo bianco
     sf::RectangleShape shape;
     shape.setSize(sf::Vector2f(WIDTH/1.8, HEIGHT/1.8));
     shape.setOrigin(shape.getSize().x/2, shape.getSize().y/2);
     shape.setPosition(sf::Vector2f(WIDTH/2, HEIGHT/2));
 
+    // Titolo
     sf::Text testo;
     testo.setFont(font);
     testo.setString(" BENVENUTO AL GIOCO \n           DELL'OCA");
@@ -209,7 +209,7 @@ void drawMenu() {
     testo.setOrigin(textBounds.width/2, textBounds.height/2);
     testo.setPosition(sf::Vector2f(WIDTH/2, HEIGHT/3));
     
-    sprites[0].draw();
+    menuWP.draw();
     window.draw(shape);
     window.draw(testo);
     bottoni[0].draw();
@@ -217,7 +217,7 @@ void drawMenu() {
 
 
 void drawPartita() {
-    sprites[1].draw();
+    mappa.draw();
     
 }
 
