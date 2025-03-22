@@ -13,6 +13,7 @@ sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dei fantini"); // Crea
 sf::Event event; // Crea gestore eventi
 sf::Font font; 
 
+
 struct Player {
     string nome;
     float x, y;
@@ -96,17 +97,25 @@ struct Sprite {
         return sprite.getPosition();
     }
 };
-Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1.0f, "data/menuWP.jpg");
-Sprite mappa(WIDTH / 2, HEIGHT / 2, 1.0f, "data/mappa.png");
+// Crea gli sprites
+Sprite menuWP(WIDTH/2, HEIGHT/2, 1, "data/menuWP.jpg");
+Sprite mappa(WIDTH*2.65/4, HEIGHT*1.4/4, 0.8, "data/mappa.png");
+Sprite d1(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d1.png");
+Sprite d2(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d2.png");
+Sprite d3(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d3.png");
+Sprite d4(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d4.png");
+Sprite d5(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d5.png");
+Sprite d6(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d6.png");
+
 
 
 void input();
 void update();
 void draw();
 void drawMenu();
-void drawPartita();
 void drawBottoni();
 void drawSprites();
+void drawDado(int n, sf::RectangleShape shape);
 void turnoPlayer(int nPlayer);
 void controlloCasella(int nPlayer);
 
@@ -132,6 +141,14 @@ int main() {
     // Crea bottone start
     bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
 
+    // Crea dado
+    sf::RectangleShape dado;
+    dado.setSize(sf::Vector2f(WIDTH/5, WIDTH/5));
+    dado.setOrigin(dado.getPosition().x + dado.getSize().x/2, dado.getPosition().y + dado.getSize().y/2);
+    dado.setPosition(WIDTH*0.68/4, HEIGHT*1/4);
+    dado.setOutlineThickness(2);
+    dado.setOutlineColor(sf::Color::Black);
+
 
     //--- LOOP PRINCIPALE DEL GIOCO ---
     while (window.isOpen()) {
@@ -146,7 +163,19 @@ int main() {
         
         update();
 
-        draw();
+        window.clear(sf::Color::White);
+
+        if (menu) {
+            drawMenu();
+        }
+        else if (partita) {
+            mappa.draw();
+            int n=1; // Variabile di prova
+            drawDado(n, dado);
+            d1.draw();
+        }
+        
+        window.display();
 
     }
 }
@@ -175,20 +204,6 @@ void update() {
 }
 
 
-void draw() {
-    window.clear();
-
-    if (menu) {
-        drawMenu();
-    }
-    else if (partita) {
-        drawPartita();
-    }
-    
-    window.display();
-}
-
-
 void drawMenu() {
     // Rettangolo bianco
     sf::RectangleShape shape;
@@ -213,9 +228,8 @@ void drawMenu() {
 }
 
 
-void drawPartita() {
-    mappa.draw();
-    
+void drawDado(int n, sf::RectangleShape shape) {
+    window.draw(shape);
 }
 
 
