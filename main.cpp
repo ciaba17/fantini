@@ -10,7 +10,7 @@ const float WIDTH = 1920;
 const float HEIGHT = 1080;
 
 sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dei fantini"); // Crea l'oggetto finestra
-sf::Event event; // Crea gestore event
+sf::Event event; // Crea gestore eventi
 sf::Font font; 
 
 struct Player {
@@ -241,9 +241,11 @@ void turnoPlayer(int nPlayer) {
 
     staTirandoDado = true;
     
-    while (staTirandoDado) {
-        //mettere che appare il dado e aspetta che clicchi lo schermo per tirare
-        staTirandoDado = false;
+    if (nPlayer==0) {
+        while (staTirandoDado) {
+            //mettere che appare il dado e aspetta che clicchi lo schermo per tirare
+            staTirandoDado = false;
+        }
     }
 
     risultatoDado = tiraDadi(1, 6);
