@@ -43,27 +43,28 @@ struct Bottone {
         this -> height = height;
         area = sf::FloatRect(x, y, width, height);
 
-        
+
         shape.setSize(sf::Vector2f(width, height));
+        shape.setOutlineColor(sf::Color::Black);
         shape.setFillColor(colore);
         shape.setOrigin(shape.getSize().x/2, shape.getSize().y/2);
         shape.setPosition(sf::Vector2f(x, y));
     }
-
-    void draw() {
-        window.draw(shape);
-    }
-
 };
 
+void input();
+void update();
 void draw();
-void drawTitolo();
+void drawMenu();
+void drawBottoni();
 
-bool suTasto();
+bool suBottone();
+int tiraDadi(int nDadi,int faccieDado);
 
 
 vector<Player> players;
 vector<Bottone> bottoni;
+bool menu = true;
 
 
 int main() {
@@ -74,6 +75,8 @@ int main() {
         return -1;
     }
 
+    bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
+
 
     //--- LOOP PRINCIPALE DEL GIOCO ---
     while (window.isOpen()) {
@@ -81,9 +84,10 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+            input();
         }
         
-
+        update();
         
 
         draw();
@@ -92,15 +96,40 @@ int main() {
 }
 
 
+void input() {
+    if (event.type == sf::Event::KeyPressed) {
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && suBottone) {
+        if (menu) {
+            menu = false;
+            bottoni.erase(bottoni.begin());
+        }
+    }
+
+}
+
+
+void update() {
+    if (menu) {
+
+    }
+}
+
 void draw() {
     window.clear();
-    drawTitolo();
+    if (menu) {
+        drawMenu();
+    }
+
+    drawBottoni();
 
 
     window.display();
 }
 
-void drawTitolo() {
+
+void drawMenu() {
     sf::RectangleShape shape;
     shape.setSize(sf::Vector2f(WIDTH/1.8, HEIGHT/1.8));
     shape.setOrigin(shape.getSize().x/2, shape.getSize().y/2);
@@ -119,11 +148,32 @@ void drawTitolo() {
     window.draw(testo);
 }
 
-bool suTasto() {
+
+void drawBottoni() {
+    for (auto bottone : bottoni) {
+        window.draw(bottone.shape);
+    }
+}
+
+
+bool suBottone() {
     for (auto bottone : bottoni) { // Controlla tutti i bottoni
         if (bottone.area.contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)))) { // Vede se il mouse si trova all'interno di un bottone
             return true;
         }
     }
     return false;
+}
+
+
+int tiraDadi(int nDadi,int faccieDado){
+    
+    int totale=0;
+
+    //genera e somma i numeri casuali dei dadi
+    for(int i=0;i<nDadi;i++){
+        totale += rand() % faccieDado + 1; 
+    }
+
+    return totale;
 }
