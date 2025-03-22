@@ -105,6 +105,8 @@ void drawMenu();
 void drawPartita();
 void drawBottoni();
 void drawSprites();
+void turnoPlayer(int nPlayer);
+void controlloCasella(int nPlayer);
 
 bool suBottone();
 int tiraDadi(int nDadi,int faccieDado);
@@ -116,6 +118,7 @@ vector<Sprite> sprites;
 
 
 bool menu = true;
+bool staTirandoDado = false;
 bool partita = false;
 
 
@@ -169,7 +172,11 @@ void input() {
 
 
 void update() {
-
+    if (partita) {
+        for (int i = 0; i < 4; i++) {
+            turnoPlayer(i);
+        }
+    }
 }
 
 
@@ -229,9 +236,30 @@ bool suBottone() {
     return false;
 }
 
+void turnoPlayer(int nPlayer) {
 
+    int risultatoDado = 0;
 
-int tiraDadi(int nDadi,int faccieDado){
+    //mettere animazione di cambio turno
+
+    staTirandoDado = true;
+    
+    while (staTirandoDado) {
+        //mettere che appare il dado e aspetta che clicchi lo schermo per tirare
+    }
+
+    risultatoDado = tiraDadi(1, 6);
+
+    //mettere l'animazione del tiro del dado possibilmente in funzione
+
+    players[nPlayer].casella += risultatoDado;
+
+    //mettere l'animazione del movimento casella possibilmente in funzione
+
+    controlloCasella(nPlayer);
+}
+
+int tiraDadi(int nDadi,int faccieDado) {
     
     int totale = 0;
 
@@ -241,4 +269,13 @@ int tiraDadi(int nDadi,int faccieDado){
     }
 
     return totale;
+}
+
+void controlloCasella(int nPlayer) {
+    switch (players[nPlayer].casella){
+    case 1:
+        break;
+    default:
+        break;
+    }
 }
