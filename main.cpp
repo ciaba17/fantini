@@ -100,12 +100,12 @@ struct Sprite {
 // Crea gli sprites
 Sprite menuWP(WIDTH/2, HEIGHT/2, 1, "data/menuWP.jpg");
 Sprite mappa(WIDTH*2.65/4, HEIGHT*1.4/4, 0.8, "data/mappa.png");
-Sprite d1(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d1.png");
-Sprite d2(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d2.png");
-Sprite d3(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d3.png");
-Sprite d4(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d4.png");
-Sprite d5(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d5.png");
-Sprite d6(WIDTH*2.65/4, HEIGHT*1.4/4, 0.5, "data/d6.png");
+Sprite d1(0, 0, 0.4, "data/d1.png");
+Sprite d2(0, 0, 0.4, "data/d2.png");
+Sprite d3(0, 0, 0.4, "data/d3.png");
+Sprite d4(0, 0, 0.4, "data/d4.png");
+Sprite d5(0, 0, 0.4, "data/d5.png");
+Sprite d6(0, 0, 0.4, "data/d6.png");
 
 
 
@@ -115,7 +115,7 @@ void draw();
 void drawMenu();
 void drawBottoni();
 void drawSprites();
-void drawDado(int n, sf::RectangleShape shape);
+void drawDado(int nDado, int nFacce);
 void turnoPlayer(int nPlayer);
 void controlloCasella(int nPlayer);
 
@@ -141,14 +141,6 @@ int main() {
     // Crea bottone start
     bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
 
-    // Crea dado
-    sf::RectangleShape dado;
-    dado.setSize(sf::Vector2f(WIDTH/5, WIDTH/5));
-    dado.setOrigin(dado.getPosition().x + dado.getSize().x/2, dado.getPosition().y + dado.getSize().y/2);
-    dado.setPosition(WIDTH*0.68/4, HEIGHT*1/4);
-    dado.setOutlineThickness(2);
-    dado.setOutlineColor(sf::Color::Black);
-
 
     //--- LOOP PRINCIPALE DEL GIOCO ---
     while (window.isOpen()) {
@@ -163,16 +155,14 @@ int main() {
         
         update();
 
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Cyan);
 
         if (menu) {
             drawMenu();
         }
         else if (partita) {
             mappa.draw();
-            int n=1; // Variabile di prova
-            drawDado(n, dado);
-            d1.draw();
+            drawDado(4,1);
         }
         
         window.display();
@@ -228,8 +218,61 @@ void drawMenu() {
 }
 
 
-void drawDado(int n, sf::RectangleShape shape) {
-    window.draw(shape);
+void drawDado(int nDado, int nFaccia) {
+    int x, y;
+
+    for (int i = 1; i <= nDado; i++) { // Itera per ogni dado richiesto
+        // Posiziona il dado in base al numero di dado
+        switch (i) {
+        case 1:
+            x = y = WIDTH*0.35/4;
+            break;
+        case 2:
+            x = WIDTH*1/4;
+            y = WIDTH*0.35/4;
+            break;
+        case 3:
+            x = WIDTH*0.35/4;
+            y = HEIGHT*1.6/4;
+            break;
+        case 4:
+            x = WIDTH*1/4;
+            y = HEIGHT*1.6/4;
+            break;
+        default:
+            break;
+        }
+
+        // Disegna la faccia richiesta
+        switch (nFaccia) {
+        case 1:
+            d1.setPosition(x, y);
+            d1.draw();
+            break;
+        case 2:
+            d2.setPosition(x, y);
+            d2.draw();
+            break;
+        case 3:       
+            d3.setPosition(x, y);
+            d3.draw();
+            break; 
+        case 4:
+            d4.setPosition(x, y);
+            d4.draw();
+            break;
+        case 5:
+            d5.setPosition(x, y);
+            d5.draw();
+            break;
+        case 6:
+            d6.setPosition(x, y);
+            d6.draw();
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 
