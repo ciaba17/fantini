@@ -139,6 +139,7 @@ void sleep(int ms);
 
 bool menu = true;
 bool partita = false;
+bool pausa = false; 
 int totaleDadi;
 vector<int> facciaDadi;
 
@@ -156,6 +157,8 @@ int main() {
     sf::RectangleShape shape;
     sf::Text testo;
     creazioneMenu(shape, testo);
+    // Crea il menu pausa
+    creazionePausa();
 
 
     while (window.isOpen()) {
@@ -178,6 +181,9 @@ int main() {
             for (auto& player : players) {
                 player.draw();
             }
+        }
+        else if (pausa) {
+            drawPausa(shape);
         }
         window.display();
     }
