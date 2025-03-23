@@ -127,7 +127,9 @@ Sprite d6(0, 0, 0.4, "data/d6.png");
 bool suBottone();
 int tiraDadi(int nDadi);
 void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
+void creazionePausa();
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
+void drawPausa(sf::RectangleShape shape);
 void drawDado();
 void input();
 void update();
@@ -137,6 +139,7 @@ void sleep(int ms);
 
 bool menu = true;
 bool partita = false;
+bool pausa = false; 
 int totaleDadi;
 vector<int> facciaDadi;
 
@@ -154,6 +157,8 @@ int main() {
     sf::RectangleShape shape;
     sf::Text testo;
     creazioneMenu(shape, testo);
+    // Crea il menu pausa
+    creazionePausa();
 
 
     while (window.isOpen()) {
@@ -176,6 +181,9 @@ int main() {
             for (auto& player : players) {
                 player.draw();
             }
+        }
+        else if (pausa) {
+            drawPausa(shape);
         }
         window.display();
     }
