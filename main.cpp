@@ -199,8 +199,16 @@ void input() {
     }
     else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i
         players[0].staGiocando = true; // Il giocatore 1 inizia il turno
-        }
     }
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) && partita) {
+        partita = false;
+        pausa = true;
+    }
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) && pausa) {
+        partita = true;
+        pausa = false;
+    }
+}
 
 
 void update() {
@@ -250,11 +258,27 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.2, HEIGHT * 0.2, "START", sf::Color::Red));
 }
 
+void creazionePausa() {
+    // Bottone RIPRENDI
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.2, HEIGHT * 0.2, "RIPRENDI", sf::Color::Red));
+    // Bottone TORNA AL MENU
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2, WIDTH * 0.2, HEIGHT * 0.2, "TORNA AL MENU", sf::Color::Red));
+    // Bottone ESCI DAL GIOCO
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2.5, WIDTH * 0.2, HEIGHT * 0.2, "ESCI DAL GIOCO", sf::Color::Red));
+}
+
 void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     menuWP.draw(); // Disegna il background del menu
     window.draw(shape); // Disegna il rettangolo
     window.draw(testo); // Disegna il testo
     bottoni[0].draw(); // Disegna il bottone START
+}
+
+void drawPausa(sf::RectangleShape shape) {
+    window.draw(shape); //disegna il rettangolo
+    bottoni[1].draw();  // Disegna il bottone RIPRENDI  
+    bottoni[2].draw();  // Disegna il bottone TORNA AL MENU
+    bottoni[3].draw();  // Disegna il bottone ESCI DAL GIOCO
 }
 
 void drawDado() {
