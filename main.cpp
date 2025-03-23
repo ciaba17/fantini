@@ -3,6 +3,8 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -128,13 +130,12 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo);
 void drawDado();
 void input();
 void update();
-void turnoPlayer(int nPlayer);
-void controlloCasella(int nPlayer);
+void turnoPlayer(Player& player);
+void controlloCasella(Player& player);
+void sleep(int ms);
 
 bool menu = true;
-bool staTirandoDado = false;
 bool partita = false;
-bool dadoLanciato = false;
 int totaleDadi;
 vector<int> facciaDadi;
 
@@ -186,21 +187,39 @@ void input() {
             bottoni.erase(bottoni.begin());
         }
     }
-    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Lancia i dadi
-        facciaDadi.clear();
-        tiraDadi(4);
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i
+        players[0].staGiocando = true; // Il giocatore 1 inizia il turno
+        }
     }
-}
+
 
 void update() {
-    // PARTE PER ORA NON FUNZIONANTE
     if (partita) {
+        // Controlla se e di chi è il turno
         for (auto& player : players) {
             if (player.staGiocando) {
-                turnoPlayer(player.numero);
+                turnoPlayer(player);
+            }
+        }
+    
+        for (auto& player : players) {
+            if (player.staGiocando) {
+                sleep(1000);
+                player.staGiocando = false;
+
+                if (player.numero % 4 != 0) {
+                    players[(player.numero) % 4].staGiocando = true;
+                    break;
+                }
             }
         }
     }
+
+    cerr << players[0].casella << '\t';
+    cerr << players[1].casella << '\t';
+    cerr << players[2].casella << '\t';
+    cerr << players[3].casella << '\t';
+    cerr << endl;
 }
 
 
@@ -255,63 +274,71 @@ void drawDado() {
         }
 
         // Disegna la faccia del dado
-        switch (facciaDadi[i]) {
-            case 1:
-                d1.setPosition(x, y);
-                d1.draw();
-                break;
-            case 2:
-                d2.setPosition(x, y);
-                d2.draw();
-                break;
-            case 3:
-                d3.setPosition(x, y);
-                d3.draw();
-                break;
-            case 4:
-                d4.setPosition(x, y);
-                d4.draw();
-                break;
-            case 5:
-                d5.setPosition(x, y);
-                d5.draw();
-                break;
-            case 6:
-                d6.setPosition(x, y);
-                d6.draw();
-                break;
-            default:
-                break;
+        if (!players[0].staGiocando || players[1].staGiocando || players[2].staGiocando || players[3].staGiocando) { // Se è il turno di un giocatore
+            switch (facciaDadi[i]) {
+                case 1:
+                    d1.setPosition(x, y);
+                    d1.draw();
+                    break;
+                case 2:
+                    d2.setPosition(x, y);
+                    d2.draw();
+                    break;
+                case 3:
+                    d3.setPosition(x, y);
+                    d3.draw();
+                    break;
+                case 4:
+                    d4.setPosition(x, y);
+                    d4.draw();
+                    break;
+                case 5:
+                    d5.setPosition(x, y);
+                    d5.draw();
+                    break;
+                case 6:
+                    d6.setPosition(x, y);
+                    d6.draw();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
 
 
 int tiraDadi(int nDadi) {
-    int totale = 0;
+    totaleDadi = 0;
 
     for (int i = 0; i < nDadi; i++) {
         facciaDadi.push_back(rand() % 6 + 1); // Aggiunge il risultato del dado all'array
-        totale += facciaDadi[i];}
+        totaleDadi += facciaDadi[i];
+    }
 
-    return totale; // PER ORA NON USATO
+    
+    return 1; // PER ORA NON USATO
 }
 
 
-void turnoPlayer(int nPlayer) {
-    int risultatoDado;
+void turnoPlayer(Player& player) {
+    cerr << endl << "sta giocando" << player.nome << endl;
 
-    players[nPlayer].casella += risultatoDado;
+    // Tira i dadi
+    facciaDadi.clear(); // Elimina i risultati dei dadi precedenti
+    tiraDadi(2); // Tira i dadi in base al numero di dadi 
 
-    controlloCasella(nPlayer);
+    player.casella += totaleDadi; // Aggiorna la casella del giocatore
 
+    controlloCasella(player);
 }
 
 
-void controlloCasella(int nPlayer) {
+void controlloCasella(Player& player) {
     // Gestisci il comportamento quando un giocatore finisce su una casella
-    switch(players[nPlayer].casella) {
+    switch(player.casella) {
         case 1:
+            cerr << "ciao";
             break;
         case 2:
             break;
@@ -351,6 +378,8 @@ void controlloCasella(int nPlayer) {
             break;
         case 20:
             break;
+        default:
+            break;
     }
 }
 
@@ -365,4 +394,9 @@ bool suBottone() { // Controlla se il mouse è sopra un bottone
         }
     }
     return false;
+}
+
+
+void sleep(int ms) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
