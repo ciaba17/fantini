@@ -20,14 +20,15 @@ struct Player {
     int numero;
     string nome;
     float x, y;
+    float initX, initY;
     int casella = 0;
     bool staGiocando = false;
     sf::Color colore;
     sf::CircleShape shape; // Rappresenta il giocatore con un cerchio
 
     Player(string nome, sf::Color colore, int numero, int x, int y) {
-        this->x = x;
-        this->y = y;
+        this->x = initX = x;
+        this->y = initY = y;
         this->numero = numero;
         this->nome = nome;
         this->colore = colore;
@@ -145,10 +146,10 @@ int main() {
     mappa.sprite.setScale(0.8, 0.85); // Risetta la scala della mappa
     font.loadFromFile("data/arial.ttf"); // Carica il font
     // Crea i player
-    players.push_back(Player("Giocatore", sf::Color::Red, 1, WIDTH*1.39/4, HEIGHT*2.667/4));
-    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH*1.49/4, HEIGHT*2.667/4));
-    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH*1.39/4, HEIGHT*2.795/4));
-    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH*1.49/4, HEIGHT*2.795/4));
+    players.push_back(Player("Giocatore", sf::Color::Red, 1, WIDTH*0.2745, HEIGHT*2.6669/4));
+    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH*0.2995, HEIGHT*2.6669/4));
+    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH*0.2745, HEIGHT*2.796/4));
+    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH*0.2995, HEIGHT*2.796/4));
     // Crea il menu
     sf::RectangleShape shape;
     sf::Text testo;
@@ -341,31 +342,22 @@ void controlloCasella(Player& player) {
 
     switch(player.casella) {
     case 1:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 2:
-        player.x  += player.casella * WIDTH*0.05;
         break;
     case 3:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 4:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 5:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 6:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 7:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 8:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 9:
-        player.x += player.casella * WIDTH*0.05;
         break;
     case 10:
         break;
@@ -393,7 +385,50 @@ void controlloCasella(Player& player) {
         break;
     }
 
+
+    const float casellaX = WIDTH*0.073;
+    const float casellaY = HEIGHT*0.06534;
+
+    if (player.casella <= 9) { // Gestione caselle da 1 a 9
+        player.x += player.casella * casellaX;
+    }
+    else if (player.casella <= 19) { // Gestione caselle da 10 a 19
+        player.x = player.initX + 9 * casellaX;
+        player.y -= (player.casella - 9) * casellaY;
+    }
+    else if (player.casella <= 27) { // Gestione caselle da 20 a 27
+        player.x = player.initX + 9 * casellaX;
+        player.y = player.initY - 10 * casellaY;
+        player.x -= (player.casella - 19) * casellaX;
+    }
+    else if (player.casella <= 35) { // Gestione caselle da 28 a 35
+        player.x = player.initX + casellaX;
+        player.y = player.initY - 10 * casellaY;
+        player.y += (player.casella - 27) * casellaY;
+    }
+    else if (player.casella <= 41) { // Gestione caselle da 36 a 41
+        player.x = player.initX + casellaX;
+        player.y = player.initY - 2 * casellaY;
+        player.x += (player.casella - 35) * casellaX;
+    }
+    else if (player.casella <= 47) { // Gestione caselle da 42 a 47
+        player.x = player.initX + 7 * casellaX;
+        player.y = player.initY - 2 * casellaY;
+        player.y += (player.casella - 41) * casellaY;
+    }
+    else if (player.casella <= 51) { // Gestione caselle da 48 a 51
+        player.x = player.initX + 7 * casellaX;
+        player.y = player.initY + 6 * casellaY;
+        player.x -= (player.casella - 47) * casellaX;
+    }
+    else if (player.casella <= 55) {
+        player.x = player.initX + casellaX;
+        player.y = player.initY + 6 * casellaY;
+        player.y -= (player.casella - 51) * casellaY;
+    }
+
     player.setPosition(player.x, player.y);
+
 }
 
 
