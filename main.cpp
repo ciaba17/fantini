@@ -125,7 +125,7 @@ Sprite d6(0, 0, 0.4, "data/d6.png");
 
 bool suBottone();
 int tiraDadi(int nDadi);
-void menuCreation(sf::RectangleShape& shape, sf::Text& testo);
+void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
 void drawDado();
 void input();
@@ -149,10 +149,11 @@ int main() {
     players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH*1.49/4, HEIGHT*2.667/4));
     players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH*1.39/4, HEIGHT*2.795/4));
     players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH*1.49/4, HEIGHT*2.795/4));
-
+    // Crea il menu
     sf::RectangleShape shape;
     sf::Text testo;
-    menuCreation(shape, testo);
+    creazioneMenu(shape, testo);
+
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -223,7 +224,7 @@ void update() {
 }
 
 
-void menuCreation(sf::RectangleShape& shape, sf::Text& testo) {
+void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     // Rettangolo bianco
     shape.setSize(sf::Vector2f(WIDTH / 1.8, HEIGHT / 1.8));
     shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
@@ -336,51 +337,63 @@ void turnoPlayer(Player& player) {
 
 void controlloCasella(Player& player) {
     // Gestisci il comportamento quando un giocatore finisce su una casella
+
+
     switch(player.casella) {
-        case 1:
-            cerr << "ciao";
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            break;
-        case 7:
-            break;
-        case 8:
-            break;
-        case 9:
-            break;
-        case 10:
-            break;
-        case 11:
-            break;
-        case 12:
-            break;
-        case 13:
-            break;
-        case 14:
-            break;
-        case 15:
-            break;
-        case 16:
-            break;
-        case 17:
-            break;
-        case 18:
-            break;
-        case 19:
-            break;
-        case 20:
-            break;
-        default:
-            break;
+    case 1:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 2:
+        player.x  += player.casella * WIDTH*0.05;
+        break;
+    case 3:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 4:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 5:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 6:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 7:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 8:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 9:
+        player.x += player.casella * WIDTH*0.05;
+        break;
+    case 10:
+        break;
+    case 11:
+        break;
+    case 12:
+        break;
+    case 13:
+        break;
+    case 14:
+        break;
+    case 15:
+        break;
+    case 16:
+        break;
+    case 17:
+        break;
+    case 18:
+        break;
+    case 19:
+        break;
+    case 20:
+        break;
+    default:
+        break;
     }
+
+    player.setPosition(player.x, player.y);
 }
 
 
