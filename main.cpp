@@ -9,24 +9,40 @@ using namespace std;
 const float WIDTH = 1920;
 const float HEIGHT = 1080;
 
-sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dei fantini"); // Crea l'oggetto finestra
+sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dell'oca"); // Crea l'oggetto finestra
 sf::Event event; // Crea gestore eventi
-sf::Font font; 
+sf::Font font;
 
 
 struct Player {
+    int numero;
     string nome;
     float x, y;
     int casella = 0;
+    bool staGiocando = false;
     sf::Color colore;
-    
-    Player(string nome, sf::Color colore) {
-        this -> nome = nome;
-        this -> colore = colore;
+    sf::CircleShape shape; // Rappresenta il giocatore con un cerchio
+
+    Player(string nome, sf::Color colore, int numero, int x, int y) {
+        this->x = x;
+        this->y = y;
+        this->numero = numero;
+        this->nome = nome;
+        this->colore = colore;
+        shape.setRadius(WIDTH*0.008); // Imposta il raggio della "pietra" che rappresenta il giocatore
+        shape.setFillColor(colore);
+        setPosition(x, y);
+    }
+
+    void setPosition(float x, float y) {
+        shape.setPosition(x, y);
+    }
+
+    void draw() {
+        window.draw(shape);
     }
 };
 vector<Player> players;
-
 
 struct Bottone {
     bool premuto = false;
@@ -36,31 +52,29 @@ struct Bottone {
     sf::RectangleShape shape;
     sf::Text testo;
     sf::FloatRect area;
-    
-    
+
     Bottone(float x, float y, float width, float height, string testoS, sf::Color colore) {
         this->x = x;
         this->y = y;
         this->width = width;
         this->height = height;
-    
+
         area = sf::FloatRect(x - width / 2, y - height / 2, width, height);
-    
+
         shape.setSize(sf::Vector2f(width, height));
         shape.setOutlineColor(sf::Color::Black);
         shape.setFillColor(colore);
         shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
         shape.setPosition(sf::Vector2f(x, y));
-    
+
         testo.setFont(font);
         testo.setString(testoS);
-        testo.setCharacterSize(width/3.4);
+        testo.setCharacterSize(width / 3.4);
         testo.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = testo.getLocalBounds();
         testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
         testo.setPosition(sf::Vector2f(x, y));  // Posiziona il testo al centro
     }
-    
 
     void draw() {
         window.draw(shape);
@@ -68,7 +82,6 @@ struct Bottone {
     }
 };
 vector<Bottone> bottoni;
-
 
 struct Sprite {
     sf::Texture texture;
@@ -98,8 +111,8 @@ struct Sprite {
     }
 };
 // Crea gli sprites
-Sprite menuWP(WIDTH/2, HEIGHT/2, 1, "data/menuWP.jpg");
-Sprite mappa(WIDTH*2.65/4, HEIGHT*1.4/4, 0.8, "data/mappa.png");
+Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
+Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.48 / 4, 0.8, "data/mappa.png");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
 Sprite d3(0, 0, 0.4, "data/d3.png");
@@ -108,232 +121,248 @@ Sprite d5(0, 0, 0.4, "data/d5.png");
 Sprite d6(0, 0, 0.4, "data/d6.png");
 
 
-
+bool suBottone();
+int tiraDadi(int nDadi);
+void menuCreation(sf::RectangleShape& shape, sf::Text& testo);
+void drawMenu(sf::RectangleShape shape, sf::Text testo);
+void drawDado();
 void input();
 void update();
-void draw();
-void drawMenu();
-void drawBottoni();
-void drawSprites();
-void drawDado(int nDado, int nFacce);
 void turnoPlayer(int nPlayer);
 void controlloCasella(int nPlayer);
-
-bool suBottone();
-int tiraDadi(int nDadi,int faccieDado);
-
 
 bool menu = true;
 bool staTirandoDado = false;
 bool partita = false;
+bool dadoLanciato = false;
+int totaleDadi;
+vector<int> facciaDadi;
 
 
 int main() {
     srand(time(NULL));
-    // Carica il font per i testi
-    font.loadFromFile("data/arial.ttf");
-    // Crea i players
-    players.push_back(Player("Giocatore", sf::Color::Red));
-    players.push_back(Player("CPU 1", sf::Color::Blue));
-    players.push_back(Player("CPU 2", sf::Color::Green));
-    players.push_back(Player("CPU 3", sf::Color::Yellow));
+    mappa.sprite.setScale(0.8, 0.85); // Risetta la scala della mappa
+    font.loadFromFile("data/arial.ttf"); // Carica il font
+    // Crea i player
+    players.push_back(Player("Giocatore", sf::Color::Red, 1, WIDTH*1.39/4, HEIGHT*2.667/4));
+    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH*1.49/4, HEIGHT*2.667/4));
+    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH*1.39/4, HEIGHT*2.795/4));
+    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH*1.49/4, HEIGHT*2.795/4));
 
-    // Crea bottone start
-    bottoni.push_back(Bottone(WIDTH/2, HEIGHT/1.5, WIDTH*0.2, HEIGHT*0.2, "START", sf::Color::Red));
+    sf::RectangleShape shape;
+    sf::Text testo;
+    menuCreation(shape, testo);
 
-
-    //--- LOOP PRINCIPALE DEL GIOCO ---
     while (window.isOpen()) {
-        
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
 
-        
             input();
         }
-        
+
         update();
 
         window.clear(sf::Color::Cyan);
-
         if (menu) {
-            drawMenu();
+            drawMenu(shape, testo);
         }
         else if (partita) {
             mappa.draw();
-            drawDado(4,1);
+            drawDado(); // Chiamata per il dado
+            for (auto& player : players) {
+                player.draw();
+            }
         }
-        
         window.display();
-
     }
 }
 
-
 void input() {
-    if (event.type == sf::Event::KeyPressed) {
-    }
-
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && suBottone()) {
-        if (menu) {
+        if (menu) { // Se si è nel menu
             menu = false;
             partita = true;
             bottoni.erase(bottoni.begin());
         }
     }
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Lancia i dadi
+        facciaDadi.clear();
+        tiraDadi(4);
+    }
 }
-
 
 void update() {
+    // PARTE PER ORA NON FUNZIONANTE
     if (partita) {
-        for (int i = 0; i < 4; i++) {
-            turnoPlayer(i);
+        for (auto& player : players) {
+            if (player.staGiocando) {
+                turnoPlayer(player.numero);
+            }
         }
     }
 }
 
 
-void drawMenu() {
+void menuCreation(sf::RectangleShape& shape, sf::Text& testo) {
     // Rettangolo bianco
-    sf::RectangleShape shape;
-    shape.setSize(sf::Vector2f(WIDTH/1.8, HEIGHT/1.8));
-    shape.setOrigin(shape.getSize().x/2, shape.getSize().y/2);
-    shape.setPosition(sf::Vector2f(WIDTH/2, HEIGHT/2));
-
-    // Titolo
-    sf::Text testo;
+    shape.setSize(sf::Vector2f(WIDTH / 1.8, HEIGHT / 1.8));
+    shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
+    shape.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 2));
+    // Testo
     testo.setFont(font);
     testo.setString(" BENVENUTO AL GIOCO \n           DELL'OCA");
-    testo.setCharacterSize(WIDTH/22);
+    testo.setCharacterSize(WIDTH / 22);
     testo.setFillColor(sf::Color::Black);
     sf::FloatRect textBounds = testo.getLocalBounds();
-    testo.setOrigin(textBounds.width/2, textBounds.height/2);
-    testo.setPosition(sf::Vector2f(WIDTH/2, HEIGHT/3));
-    
-    menuWP.draw();
-    window.draw(shape);
-    window.draw(testo);
-    bottoni[0].draw();
+    testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
+    testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
+    // Bottone start
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.2, HEIGHT * 0.2, "START", sf::Color::Red));
 }
 
+void drawMenu(sf::RectangleShape shape, sf::Text testo) {
+    menuWP.draw(); // Disegna il background del menu
+    window.draw(shape); // Disegna il rettangolo
+    window.draw(testo); // Disegna il testo
+    bottoni[0].draw(); // Disegna il bottone START
+}
 
-void drawDado(int nDado, int nFaccia) {
+void drawDado() {
     int x, y;
 
-    for (int i = 1; i <= nDado; i++) { // Itera per ogni dado richiesto
-        // Posiziona il dado in base al numero di dado
+    // Itera per ogni dado
+    for (int i = 0; i < facciaDadi.size(); i++) {
+    // Imposta la posizione del dado in base al numero del dado
         switch (i) {
-        case 1:
-            x = y = WIDTH*0.35/4;
-            break;
-        case 2:
-            x = WIDTH*1/4;
-            y = WIDTH*0.35/4;
-            break;
-        case 3:
-            x = WIDTH*0.35/4;
-            y = HEIGHT*1.6/4;
-            break;
-        case 4:
-            x = WIDTH*1/4;
-            y = HEIGHT*1.6/4;
-            break;
-        default:
-            break;
+            case 0:
+                x = y = WIDTH * 0.35 / 4;
+                break;
+            case 1:
+                x = WIDTH * 1 / 4;
+                y = WIDTH * 0.35 / 4;
+                break;
+            case 2:
+                x = WIDTH * 0.35 / 4;
+                y = HEIGHT * 1.6 / 4;
+                break;
+            case 3:
+                x = WIDTH * 1 / 4;
+                y = HEIGHT * 1.6 / 4;
+                break;
+            default:
+                break;
         }
 
-        // Disegna la faccia richiesta
-        switch (nFaccia) {
-        case 1:
-            d1.setPosition(x, y);
-            d1.draw();
-            break;
-        case 2:
-            d2.setPosition(x, y);
-            d2.draw();
-            break;
-        case 3:       
-            d3.setPosition(x, y);
-            d3.draw();
-            break; 
-        case 4:
-            d4.setPosition(x, y);
-            d4.draw();
-            break;
-        case 5:
-            d5.setPosition(x, y);
-            d5.draw();
-            break;
-        case 6:
-            d6.setPosition(x, y);
-            d6.draw();
-            break;
-        default:
-            break;
+        // Disegna la faccia del dado
+        switch (facciaDadi[i]) {
+            case 1:
+                d1.setPosition(x, y);
+                d1.draw();
+                break;
+            case 2:
+                d2.setPosition(x, y);
+                d2.draw();
+                break;
+            case 3:
+                d3.setPosition(x, y);
+                d3.draw();
+                break;
+            case 4:
+                d4.setPosition(x, y);
+                d4.draw();
+                break;
+            case 5:
+                d5.setPosition(x, y);
+                d5.draw();
+                break;
+            case 6:
+                d6.setPosition(x, y);
+                d6.draw();
+                break;
+            default:
+                break;
         }
     }
 }
 
 
-bool suBottone() {
-    for (auto& bottone : bottoni) { // Controlla tutti i bottoni
-        // Ottieni la posizione del mouse relativa alla finestra
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        sf::Vector2f mousePosInWindow = window.mapPixelToCoords(mousePos);
+int tiraDadi(int nDadi) {
+    int totale = 0;
 
-        // Verifica se il mouse è sopra il bottone
-        if (bottone.area.contains(mousePosInWindow)) { // Vede se il mouse si trova all'interno di un bottone
-            return true;
-        }
-    }
-    return false;
+    for (int i = 0; i < nDadi; i++) {
+        facciaDadi.push_back(rand() % 6 + 1); // Aggiunge il risultato del dado all'array
+        totale += facciaDadi[i];}
+
+    return totale; // PER ORA NON USATO
 }
 
 
 void turnoPlayer(int nPlayer) {
-    int risultatoDado = 0;
-
-    //mettere animazione di cambio turno
-
-    staTirandoDado = true;
-    
-    if (nPlayer==0) {
-        while (staTirandoDado) {
-            //mettere che appare il dado e aspetta che clicchi lo schermo per tirare
-            staTirandoDado = false;
-        }
-    }
-
-    risultatoDado = tiraDadi(1, 6);
-
-    //mettere l'animazione del tiro del dado possibilmente in funzione
+    int risultatoDado;
 
     players[nPlayer].casella += risultatoDado;
 
-    //mettere l'animazione del movimento casella possibilmente in funzione
-
     controlloCasella(nPlayer);
-}
 
-
-int tiraDadi(int nDadi,int faccieDado) {
-    int totale = 0;
-
-    //genera e somma i numeri casuali dei dadi
-    for(int i = 0; i < nDadi; i++){
-        totale += rand() % faccieDado + 1; 
-    }
-
-    return totale;
 }
 
 
 void controlloCasella(int nPlayer) {
-    switch (players[nPlayer].casella){
-    case 1:
-        break;
-    default:
-        break;
+    // Gestisci il comportamento quando un giocatore finisce su una casella
+    switch(players[nPlayer].casella) {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+        case 9:
+            break;
+        case 10:
+            break;
+        case 11:
+            break;
+        case 12:
+            break;
+        case 13:
+            break;
+        case 14:
+            break;
+        case 15:
+            break;
+        case 16:
+            break;
+        case 17:
+            break;
+        case 18:
+            break;
+        case 19:
+            break;
+        case 20:
+            break;
     }
+}
+
+
+bool suBottone() { // Controlla se il mouse è sopra un bottone
+    for (auto& bottone : bottoni) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f mousePosInWindow = window.mapPixelToCoords(mousePos);
+
+        if (bottone.area.contains(mousePosInWindow)) {
+            return true;
+        }
+    }
+    return false;
 }
