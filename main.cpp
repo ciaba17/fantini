@@ -124,7 +124,7 @@ Sprite d5(0, 0, 0.4, "data/d5.png");
 Sprite d6(0, 0, 0.4, "data/d6.png");
 
 
-bool suBottone();
+bool suBottone(int nBottone);
 int tiraDadi(int nDadi);
 void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
 void creazionePausa();
@@ -193,15 +193,16 @@ int main() {
 void input() {
     // Pressione di un bottone
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) ) { 
-        if (suBottone(0) && menu) // Bottone START nel menu
+        if (suBottone(0) && menu) { // Bottone START nel menu
             menu = false;
             partita = true;
             bottoni.erase(bottoni.begin()); // Elimina il bottone
+        }
+        else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i dadi
+            players[0].staGiocando = true; // Il giocatore 1 inizia il turno
+        }
     }
 
-    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i dadi
-        players[0].staGiocando = true; // Il giocatore 1 inizia il turno
-    }
 
     static bool escReleased = true; // Flag per rilevare quando il tasto viene rilasciato
     
