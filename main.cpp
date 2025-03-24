@@ -140,6 +140,7 @@ void sleep(int ms);
 bool menu = true;
 bool partita = false;
 bool pausa = false; 
+bool escPress = false;
 int totaleDadi;
 vector<int> facciaDadi;
 
@@ -183,30 +184,42 @@ int main() {
             }
         }
         else if (pausa) {
-            drawPausa(shape);
+            drawPausa(shape); // PROBLEMA QUI
         }
         window.display();
     }
 }
 
 void input() {
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && suBottone()) {
-        if (menu) { // Se si è nel menu
+    // Pressione di un bottone
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) ) { 
+        if (suBottone(0) && menu) // Bottone START nel menu
             menu = false;
             partita = true;
-            bottoni.erase(bottoni.begin());
-        }
+            bottoni.erase(bottoni.begin()); // Elimina il bottone
     }
-    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i
+
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i dadi
         players[0].staGiocando = true; // Il giocatore 1 inizia il turno
     }
-    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) && partita) {
-        partita = false;
-        pausa = true;
+
+    static bool escReleased = true; // Flag per rilevare quando il tasto viene rilasciato
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && escReleased) {
+        escReleased = false; // Impedisce la ripetizione finché il tasto non viene rilasciato
+        
+        if (partita) {
+            partita = false;
+            pausa = true;
+        } 
+        else if (pausa) {
+            partita = true;
+            pausa = false;
+        }
     }
-    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) && pausa) {
-        partita = true;
-        pausa = false;
+    
+    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        escReleased = true; // Permette di nuovo la pressione dopo il rilascio
     }
 }
 
@@ -276,9 +289,9 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo) {
 
 void drawPausa(sf::RectangleShape shape) {
     window.draw(shape); //disegna il rettangolo
-    bottoni[1].draw();  // Disegna il bottone RIPRENDI  
-    bottoni[2].draw();  // Disegna il bottone TORNA AL MENU
-    bottoni[3].draw();  // Disegna il bottone ESCI DAL GIOCO
+    bottoni[0].draw();  // Disegna il bottone RIPRENDI  
+    bottoni[1].draw();  // Disegna il bottone TORNA AL MENU
+    bottoni[2].draw();  // Disegna il bottone ESCI DAL GIOCO
 }
 
 void drawDado() {
@@ -476,14 +489,12 @@ void controlloCasella(Player& player) {
 }
 
 
-bool suBottone() { // Controlla se il mouse è sopra un bottone
-    for (auto& bottone : bottoni) {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        sf::Vector2f mousePosInWindow = window.mapPixelToCoords(mousePos);
+bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f mousePosInWindow = window.mapPixelToCoords(mousePos);
 
-        if (bottone.area.contains(mousePosInWindow)) {
-            return true;
-        }
+    if (bottoni[nBottone].area.contains(mousePosInWindow)) {
+        return true;
     }
     return false;
 }
