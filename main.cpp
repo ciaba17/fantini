@@ -422,10 +422,12 @@ void controlloCasella(Player& player) {
     const float casellaY = HEIGHT*0.06534;
 
     if (player.casella <= 9) { // Gestione caselle da 1 a 9
+        player.x = player.initX;
         player.x += player.casella * casellaX;
     }
     else if (player.casella <= 19) { // Gestione caselle da 10 a 19
         player.x = player.initX + 9 * casellaX;
+        player.y = player.initY;
         player.y -= (player.casella - 9) * casellaY;
     }
     else if (player.casella <= 27) { // Gestione caselle da 20 a 27
@@ -446,18 +448,28 @@ void controlloCasella(Player& player) {
     else if (player.casella <= 47) { // Gestione caselle da 42 a 47
         player.x = player.initX + 7 * casellaX;
         player.y = player.initY - 2 * casellaY;
-        player.y += (player.casella - 41) * casellaY;
+        player.y -= (player.casella - 41) * casellaY;
     }
     else if (player.casella <= 51) { // Gestione caselle da 48 a 51
         player.x = player.initX + 7 * casellaX;
-        player.y = player.initY + 6 * casellaY;
+        player.y = player.initY - 8 * casellaY;
         player.x -= (player.casella - 47) * casellaX;
     }
-    else if (player.casella <= 55) {
-        player.x = player.initX + casellaX;
-        player.y = player.initY + 6 * casellaY;
+    else if (player.casella <= 55) { // Gestione caselle da 52 a 55
+        player.x = player.initX + 3 *casellaX;
+        player.y = player.initY - 4 * casellaY;
         player.y -= (player.casella - 51) * casellaY;
     }
+    else if (player.casella == 56) // Gestione casella 56
+    {
+        player.x = player.initX + 4 * casellaX;
+        player.y = player.initY - 4 * casellaY;
+    }
+    else if (player.casella > 56) { // Gestione vittoria
+        player.x = player.initX + 5 * casellaX;
+        player.y = player.initY - 6 * casellaY;
+    }
+
 
     player.setPosition(player.x, player.y);
 
