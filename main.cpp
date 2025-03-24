@@ -72,11 +72,12 @@ struct Bottone {
 
         testo.setFont(font);
         testo.setString(testoS);
-        testo.setCharacterSize(width / 3.4);
+        testo.setCharacterSize(WIDTH/35);
+
         testo.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = testo.getLocalBounds();
         testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
-        testo.setPosition(sf::Vector2f(x, y));  // Posiziona il testo al centro
+        testo.setPosition(sf::Vector2f(x, y*0.975));  // Posiziona il testo al centro
     }
 
     void draw() {
@@ -115,7 +116,7 @@ struct Sprite {
 };
 // Crea gli sprites
 Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
-Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.48 / 4, 0.8, "data/mappa.png");
+Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.435/4, 0.8, "data/mappa.jpeg");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
 Sprite d3(0, 0, 0.4, "data/d3.png");
@@ -150,7 +151,7 @@ int main() {
     mappa.sprite.setScale(0.8, 0.85); // Risetta la scala della mappa
     font.loadFromFile("data/arial.ttf"); // Carica il font
     // Crea i player
-    players.push_back(Player("Giocatore", sf::Color::Red, 1, WIDTH*0.2745, HEIGHT*2.6669/4));
+    players.push_back(Player("Giocatore 1", sf::Color::Red, 1, WIDTH*0.2745, HEIGHT*2.6669/4));
     players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH*0.2995, HEIGHT*2.6669/4));
     players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH*0.2745, HEIGHT*2.796/4));
     players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH*0.2995, HEIGHT*2.796/4));
@@ -172,7 +173,8 @@ int main() {
 
         update();
 
-        window.clear(sf::Color::Cyan);
+        //---- DRAW ----
+        window.clear(sf::Color::White);
         if (menu) {
             drawMenu(shape, testo);
         }
@@ -269,7 +271,10 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
     testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
     // Bottone start
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.2, HEIGHT * 0.2, "START", sf::Color::Red));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.52, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.58, WIDTH * 0.2, HEIGHT * 0.055, "IMPOSTAZIONI", sf::Color(128, 128, 128)));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.64, WIDTH * 0.12, HEIGHT * 0.055, "CREDITI", sf::Color(128, 128, 128)));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
 }
 
 void creazionePausa() {
@@ -286,6 +291,9 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     window.draw(shape); // Disegna il rettangolo
     window.draw(testo); // Disegna il testo
     bottoni[0].draw(); // Disegna il bottone START
+    bottoni[1].draw(); // Disegna il bottone IMPOSTAZIONI
+    bottoni[2].draw(); // Disegna il bottone CREDITI
+    bottoni[3].draw(); // Disegna il bottone ESCI
 }
 
 void drawPausa(sf::RectangleShape shape) {
