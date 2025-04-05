@@ -72,11 +72,12 @@ struct Bottone {
 
         testo.setFont(font);
         testo.setString(testoS);
-        testo.setCharacterSize(width / 6);
+        testo.setCharacterSize(WIDTH/35);
+
         testo.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = testo.getLocalBounds();
         testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
-        testo.setPosition(sf::Vector2f(x, y));  // Posiziona il testo al centro
+        testo.setPosition(sf::Vector2f(x*0.995, y*0.975));  // Posiziona il testo al centro
     }
 
     void draw() {
@@ -115,7 +116,7 @@ struct Sprite {
 };
 // Crea gli sprites
 Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
-Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.48 / 4, 0.8, "data/mappa.png");
+Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.48 / 4, 0.8, "data/mappa.jpeg");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
 Sprite d3(0, 0, 0.4, "data/d3.png");
@@ -128,8 +129,10 @@ bool suBottone(int nBottone);
 int tiraDadi(int nDadi);
 void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
 void creazionePausa();
+void creazioneCrediti(sf::Text& testo);
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
 void drawPausa(sf::RectangleShape shape);
+void drawCrediti(sf::Text testo);
 void drawDado();
 void input();
 void update();
@@ -137,6 +140,7 @@ void turnoPlayer(Player& player);
 void controlloCasella(Player& player);
 void sleep(int ms);
 
+bool crediti = false;
 bool menu = true;
 bool partita = false;
 bool pausa = false;
@@ -156,10 +160,12 @@ int main() {
     players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH * 0.2995, HEIGHT * 2.796 / 4));
     // Crea il menu
     sf::RectangleShape shape;
-    sf::Text testo;
-    creazioneMenu(shape, testo);
-    // Crea il menu pausa
-    creazionePausa();
+    sf::Text testoMenu;
+    creazioneMenu(shape, testoMenu);
+    creazionePausa(); // Crea la pausa
+    // Crea i crediti
+    sf::Text testoCrediti;
+    creazioneCrediti(testoCrediti);
 
 
     while (window.isOpen()) {
@@ -173,18 +179,21 @@ int main() {
         update();
 
         window.clear(sf::Color::Cyan);
-        if (menu) {
-            drawMenu(shape, testo);
+        if (menu) { // Disegna il menu
+            drawMenu(shape, testoMenu);
         }
-        else if (partita) {
+        else if (crediti) {
+            drawCrediti(testoCrediti); // Disegna i crediti
+        }
+        else if (partita) { // Disegna la partita
             mappa.draw();
             drawDado(); // Chiamata per il dado
             for (auto& player : players) {
                 player.draw();
             }
         }
-        else if (pausa) {
-            drawPausa(shape); // PROBLEMA QUI
+        else if (pausa) { // Disegna la pausa
+            drawPausa(shape);
         }
         window.display();
     }
@@ -197,7 +206,11 @@ void input() {
             menu = false;
             partita = true;
         }
-        else if (suBottone(1)) { // Bottone ESCI nel menu
+        else if (suBottone(2)) { // Bottone CREDITI nel menu
+            crediti = true;
+            menu = false;
+        }
+        else if (suBottone(3)) { // Bottone ESCI nel menu
             window.close();
         }
     }
@@ -284,10 +297,11 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     sf::FloatRect textBounds = testo.getLocalBounds();
     testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
     testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
-    // Bottone start
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.8, WIDTH * 0.1, HEIGHT * 0.1, "START", sf::Color::Red));
-    // Bottone esci
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.1, HEIGHT * 0.1, "ESCI", sf::Color::Blue));
+    // Bottoni
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.52, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.58, WIDTH * 0.2, HEIGHT * 0.055, "IMPOSTAZIONI", sf::Color(128, 128, 128)));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.64, WIDTH * 0.12, HEIGHT * 0.055, "CREDITI", sf::Color(40,40,255)));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
 }
 
 void creazionePausa() {
@@ -299,12 +313,21 @@ void creazionePausa() {
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.1, HEIGHT * 0.1, "ESCI DAL\n  GIOCO", sf::Color::Green));
 }
 
+
+void creazioneCrediti(sf::Text& testo) {
+    testo.setFont(font);
+    testo.setString("GRAZIE PER STAR GIOCANDO AL NOSTRO GIOCO DELL'OCA  By: \n \n  - Totti Alberto - \n  - Cai Dal Pino Gabriele - \n  - Arinci Andrea -");
+    
+}
+
 void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     menuWP.draw(); // Disegna il background del menu
     window.draw(shape); // Disegna il rettangolo
     window.draw(testo); // Disegna il testo
-    bottoni[0].draw(); // Disegna il bottone START
-    bottoni[1].draw(); // Disegna il bottone ESCI
+    bottoni[0].draw(); // Disegna il bottone INIZIA
+    bottoni[1].draw(); // Disegna il bottone IMPOSTAZIONI
+    bottoni[2].draw(); // Disegna il bottone CREDITI
+    bottoni[3].draw(); // Disegna il bottone ESCI
 }
 
 void drawPausa(sf::RectangleShape shape) {
@@ -312,6 +335,11 @@ void drawPausa(sf::RectangleShape shape) {
     bottoni[2].draw();  // Disegna il bottone RIPRENDI  
     bottoni[3].draw();  // Disegna il bottone TORNA AL MENU
     bottoni[4].draw();  // Disegna il bottone ESCI DAL GIOCO
+}
+
+
+void drawCrediti(sf::Text testo) {
+    window.draw(testo); // Disegna il testo dei crediti
 }
 
 
