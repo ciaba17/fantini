@@ -32,7 +32,7 @@ struct Player {
         this->numero = numero;
         this->nome = nome;
         this->colore = colore;
-        shape.setRadius(WIDTH*0.008); // Imposta il raggio della "pietra" che rappresenta il giocatore
+        shape.setRadius(WIDTH * 0.008); // Imposta il raggio della "pietra" che rappresenta il giocatore
         shape.setFillColor(colore);
         setPosition(x, y);
     }
@@ -72,12 +72,11 @@ struct Bottone {
 
         testo.setFont(font);
         testo.setString(testoS);
-        testo.setCharacterSize(WIDTH/35);
-
+        testo.setCharacterSize(width / 6);
         testo.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = testo.getLocalBounds();
         testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
-        testo.setPosition(sf::Vector2f(x, y*0.975));  // Posiziona il testo al centro
+        testo.setPosition(sf::Vector2f(x, y));  // Posiziona il testo al centro
     }
 
     void draw() {
@@ -116,7 +115,7 @@ struct Sprite {
 };
 // Crea gli sprites
 Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
-Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.435/4, 0.8, "data/mappa.jpeg");
+Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.48 / 4, 0.8, "data/mappa.png");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
 Sprite d3(0, 0, 0.4, "data/d3.png");
@@ -140,7 +139,7 @@ void sleep(int ms);
 
 bool menu = true;
 bool partita = false;
-bool pausa = false; 
+bool pausa = false;
 bool escPress = false;
 int totaleDadi;
 vector<int> facciaDadi;
@@ -151,10 +150,10 @@ int main() {
     mappa.sprite.setScale(0.8, 0.85); // Risetta la scala della mappa
     font.loadFromFile("data/arial.ttf"); // Carica il font
     // Crea i player
-    players.push_back(Player("Giocatore 1", sf::Color::Red, 1, WIDTH*0.2745, HEIGHT*2.6669/4));
-    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH*0.2995, HEIGHT*2.6669/4));
-    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH*0.2745, HEIGHT*2.796/4));
-    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH*0.2995, HEIGHT*2.796/4));
+    players.push_back(Player("Giocatore", sf::Color::Red, 1, WIDTH * 0.2745, HEIGHT * 2.6669 / 4));
+    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH * 0.2995, HEIGHT * 2.6669 / 4));
+    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH * 0.2745, HEIGHT * 2.796 / 4));
+    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH * 0.2995, HEIGHT * 2.796 / 4));
     // Crea il menu
     sf::RectangleShape shape;
     sf::Text testo;
@@ -173,8 +172,7 @@ int main() {
 
         update();
 
-        //---- DRAW ----
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Cyan);
         if (menu) {
             drawMenu(shape, testo);
         }
@@ -193,38 +191,54 @@ int main() {
 }
 
 void input() {
-    // Pressione di un bottone
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) ) { 
-        if (suBottone(0) && menu) { // Bottone START nel menu
+    // Gestione input nel menu
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menu) {
+        if (suBottone(0)) { // Bottone START nel menu
             menu = false;
             partita = true;
-            bottoni.erase(bottoni.begin()); // Elimina il bottone
         }
-        else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i dadi
-            players[0].staGiocando = true; // Il giocatore 1 inizia il turno
+        else if (suBottone(1)) { // Bottone ESCI nel menu
+            window.close();
+        }
+    }
+
+    // Gestione input nella pausa
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && pausa) {
+        if (suBottone(2)) { // Bottone RIPRENDI
+            pausa = false;
+            partita = true;
+        }
+        else if (suBottone(3)) { // Bottone TORNA AL MENU
+            menu = true;
+            pausa = false;
+        }
+        else if (suBottone(4)) { // Bottone ESCI DAL GIOCO
+            window.close();
         }
     }
 
 
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i dadi
+        players[0].staGiocando = true; // Il giocatore 1 inizia il turno
+    }
+
     static bool escReleased = true; // Flag per rilevare quando il tasto viene rilasciato
-    
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && escReleased) {
         escReleased = false; // Impedisce la ripetizione finché il tasto non viene rilasciato
-        
         if (partita) {
             partita = false;
             pausa = true;
-        } 
+        }
         else if (pausa) {
             partita = true;
             pausa = false;
         }
     }
-    
     if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         escReleased = true; // Permette di nuovo la pressione dopo il rilascio
     }
 }
+
 
 
 void update() {
@@ -235,7 +249,7 @@ void update() {
                 turnoPlayer(player);
             }
         }
-    
+
         for (auto& player : players) {
             if (player.staGiocando) {
                 sleep(1000);
@@ -271,19 +285,18 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
     testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
     // Bottone start
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.52, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.58, WIDTH * 0.2, HEIGHT * 0.055, "IMPOSTAZIONI", sf::Color(128, 128, 128)));
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.64, WIDTH * 0.12, HEIGHT * 0.055, "CREDITI", sf::Color(128, 128, 128)));
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.8, WIDTH * 0.1, HEIGHT * 0.1, "START", sf::Color::Red));
+    // Bottone esci
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.1, HEIGHT * 0.1, "ESCI", sf::Color::Blue));
 }
 
 void creazionePausa() {
     // Bottone RIPRENDI
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.2, HEIGHT * 0.2, "RIPRENDI", sf::Color::Red));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 3, WIDTH * 0.1, HEIGHT * 0.1, "RIPRENDI", sf::Color::Blue));
     // Bottone TORNA AL MENU
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2, WIDTH * 0.2, HEIGHT * 0.2, "TORNA AL MENU", sf::Color::Red));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2, WIDTH * 0.1, HEIGHT * 0.1, "TORNA AL\n   MENU", sf::Color::Red));
     // Bottone ESCI DAL GIOCO
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2.5, WIDTH * 0.2, HEIGHT * 0.2, "ESCI DAL GIOCO", sf::Color::Red));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.1, HEIGHT * 0.1, "ESCI DAL\n  GIOCO", sf::Color::Green));
 }
 
 void drawMenu(sf::RectangleShape shape, sf::Text testo) {
@@ -291,73 +304,72 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     window.draw(shape); // Disegna il rettangolo
     window.draw(testo); // Disegna il testo
     bottoni[0].draw(); // Disegna il bottone START
-    bottoni[1].draw(); // Disegna il bottone IMPOSTAZIONI
-    bottoni[2].draw(); // Disegna il bottone CREDITI
-    bottoni[3].draw(); // Disegna il bottone ESCI
+    bottoni[1].draw(); // Disegna il bottone ESCI
 }
 
 void drawPausa(sf::RectangleShape shape) {
-    window.draw(shape); //disegna il rettangolo
-    bottoni[0].draw();  // Disegna il bottone RIPRENDI  
-    bottoni[1].draw();  // Disegna il bottone TORNA AL MENU
-    bottoni[2].draw();  // Disegna il bottone ESCI DAL GIOCO
+    window.draw(shape); // Disegna il rettangolo di sfondo
+    bottoni[2].draw();  // Disegna il bottone RIPRENDI  
+    bottoni[3].draw();  // Disegna il bottone TORNA AL MENU
+    bottoni[4].draw();  // Disegna il bottone ESCI DAL GIOCO
 }
+
 
 void drawDado() {
     int x, y;
 
     // Itera per ogni dado
     for (int i = 0; i < facciaDadi.size(); i++) {
-    // Imposta la posizione del dado in base al numero del dado
+        // Imposta la posizione del dado in base al numero del dado
         switch (i) {
-            case 0:
-                x = y = WIDTH * 0.35 / 4;
-                break;
-            case 1:
-                x = WIDTH * 1 / 4;
-                y = WIDTH * 0.35 / 4;
-                break;
-            case 2:
-                x = WIDTH * 0.35 / 4;
-                y = HEIGHT * 1.6 / 4;
-                break;
-            case 3:
-                x = WIDTH * 1 / 4;
-                y = HEIGHT * 1.6 / 4;
-                break;
-            default:
-                break;
+        case 0:
+            x = y = WIDTH * 0.35 / 4;
+            break;
+        case 1:
+            x = WIDTH * 1 / 4;
+            y = WIDTH * 0.35 / 4;
+            break;
+        case 2:
+            x = WIDTH * 0.35 / 4;
+            y = HEIGHT * 1.6 / 4;
+            break;
+        case 3:
+            x = WIDTH * 1 / 4;
+            y = HEIGHT * 1.6 / 4;
+            break;
+        default:
+            break;
         }
 
         // Disegna la faccia del dado
         if (!players[0].staGiocando || players[1].staGiocando || players[2].staGiocando || players[3].staGiocando) { // Se è il turno di un giocatore
             switch (facciaDadi[i]) {
-                case 1:
-                    d1.setPosition(x, y);
-                    d1.draw();
-                    break;
-                case 2:
-                    d2.setPosition(x, y);
-                    d2.draw();
-                    break;
-                case 3:
-                    d3.setPosition(x, y);
-                    d3.draw();
-                    break;
-                case 4:
-                    d4.setPosition(x, y);
-                    d4.draw();
-                    break;
-                case 5:
-                    d5.setPosition(x, y);
-                    d5.draw();
-                    break;
-                case 6:
-                    d6.setPosition(x, y);
-                    d6.draw();
-                    break;
-                default:
-                    break;
+            case 1:
+                d1.setPosition(x, y);
+                d1.draw();
+                break;
+            case 2:
+                d2.setPosition(x, y);
+                d2.draw();
+                break;
+            case 3:
+                d3.setPosition(x, y);
+                d3.draw();
+                break;
+            case 4:
+                d4.setPosition(x, y);
+                d4.draw();
+                break;
+            case 5:
+                d5.setPosition(x, y);
+                d5.draw();
+                break;
+            case 6:
+                d6.setPosition(x, y);
+                d6.draw();
+                break;
+            default:
+                break;
             }
         }
     }
@@ -372,7 +384,7 @@ int tiraDadi(int nDadi) {
         totaleDadi += facciaDadi[i];
     }
 
-    
+
     return 1; // PER ORA NON USATO
 }
 
@@ -394,7 +406,7 @@ void controlloCasella(Player& player) {
     // Gestisci il comportamento quando un giocatore finisce su una casella
 
 
-    switch(player.casella) {
+    switch (player.casella) {
     case 1:
         break;
     case 2:
@@ -440,8 +452,8 @@ void controlloCasella(Player& player) {
     }
 
 
-    const float casellaX = WIDTH*0.073;
-    const float casellaY = HEIGHT*0.06534;
+    const float casellaX = WIDTH * 0.073;
+    const float casellaY = HEIGHT * 0.06534;
 
     if (player.casella <= 9) { // Gestione caselle da 1 a 9
         player.x = player.initX;
@@ -478,7 +490,7 @@ void controlloCasella(Player& player) {
         player.x -= (player.casella - 47) * casellaX;
     }
     else if (player.casella <= 55) { // Gestione caselle da 52 a 55
-        player.x = player.initX + 3 *casellaX;
+        player.x = player.initX + 3 * casellaX;
         player.y = player.initY - 4 * casellaY;
         player.y -= (player.casella - 51) * casellaY;
     }
@@ -499,6 +511,11 @@ void controlloCasella(Player& player) {
 
 
 bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
+    // Se l'indice non è valido, restituisci false
+    if (nBottone < 0 || nBottone >= bottoni.size()) {
+        return false;
+    }
+
     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
     sf::Vector2f mousePosInWindow = window.mapPixelToCoords(mousePos);
 
@@ -512,4 +529,3 @@ bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
 void sleep(int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
-
