@@ -116,7 +116,7 @@ struct Sprite {
 };
 // Crea gli sprites
 Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
-Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.48 / 4, 0.8, "data/mappa.jpeg");
+Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.435 / 4, 0.8, "data/mappa.png");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
 Sprite d3(0, 0, 0.4, "data/d3.png");
@@ -134,6 +134,7 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo);
 void drawPausa(sf::RectangleShape shape);
 void drawCrediti(sf::Text testo);
 void drawDado();
+void drawCasella();
 void input();
 void update();
 void turnoPlayer(Player& player);
@@ -146,6 +147,7 @@ bool partita = false;
 bool pausa = false;
 bool escPress = false;
 int totaleDadi;
+string testoCasella = "";
 vector<int> facciaDadi;
 
 
@@ -253,7 +255,6 @@ void input() {
 }
 
 
-
 void update() {
     if (partita) {
         // Controlla se e di chi è il turno
@@ -304,6 +305,7 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
 }
 
+
 void creazionePausa() {
     // Bottone RIPRENDI
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 3, WIDTH * 0.1, HEIGHT * 0.1, "RIPRENDI", sf::Color::Blue));
@@ -320,6 +322,7 @@ void creazioneCrediti(sf::Text& testo) {
     
 }
 
+
 void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     menuWP.draw(); // Disegna il background del menu
     window.draw(shape); // Disegna il rettangolo
@@ -329,6 +332,7 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     bottoni[2].draw(); // Disegna il bottone CREDITI
     bottoni[3].draw(); // Disegna il bottone ESCI
 }
+
 
 void drawPausa(sf::RectangleShape shape) {
     window.draw(shape); // Disegna il rettangolo di sfondo
@@ -404,6 +408,20 @@ void drawDado() {
 }
 
 
+void drawCasella() {
+    // Disegna la casella in base al numero
+    sf::Text testoCasella;
+    testoCasella.setFont(font);
+    testoCasella.setString(std::to_string(players[1].casella));
+    testoCasella.setCharacterSize(WIDTH / 35);
+    testoCasella.setFillColor(sf::Color::Black);
+    sf::FloatRect textBounds = testoCasella.getLocalBounds();
+    testoCasella.setOrigin(textBounds.width / 2, textBounds.height / 2);
+    testoCasella.setPosition(players[0].x, players[0].y);
+    window.draw(testoCasella);
+}
+
+
 int tiraDadi(int nDadi) {
     totaleDadi = 0;
 
@@ -425,7 +443,7 @@ void turnoPlayer(Player& player) {
     tiraDadi(2); // Tira i dadi in base al numero di dadi 
 
     player.casella += totaleDadi; // Aggiorna la casella del giocatore
-
+    d1.draw();
     controlloCasella(player);
 }
 
@@ -557,3 +575,5 @@ bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
 void sleep(int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
+
+
