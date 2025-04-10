@@ -101,6 +101,8 @@ struct Player {
         this->colore = colore;
         shape.setRadius(WIDTH * 0.008); // Imposta il raggio della "pietra" che rappresenta il giocatore
         shape.setFillColor(colore);
+        shape.setOutlineColor(sf::Color::Black);//mette il colore del bordo pedone
+        shape.setOutlineThickness(2);//mette lo spessore al bordo pedone
         setPosition(x, y);
     }
 
