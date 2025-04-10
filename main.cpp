@@ -8,7 +8,8 @@
 
 using namespace std;
 
-const string testoCaselle[56] = {
+const string testoCaselle[58] = {
+    "Inizio",//inizio (casella 0)
     "Pensavi fosse stato un tiro sfortunato 2 e 1, invece no! D'ora in poi ogni turno tira 4 dadi invece che 2, almeno finché non atterri su una casella pari",//1
     "La professoressa Pellegrini ha riconosciuto il tuo impegno e ha deciso di premiarti, aumentando il tuo voto da 2 a 4. Avanza di due caselle!",//2
     "Che peccato! Torna indietro di 2 caselle.",//3
@@ -27,7 +28,7 @@ const string testoCaselle[56] = {
     "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e balbetterai. Per i prossimi 3 turni tira un dado invece che 2",//16
     "Goditi un attimo di quiete, fidati ti servira",//17
     "C'è fila in bagno, aspetta un turno.",//18
-    "",//19
+    "Tira 2 dadi, se esce lo stesso numero avanza di uno altrimenti torna indietro di 3 caselle!",//19
     "Qui c'è un albero molto bello.",//20
     "Un signore per strada ti saluta, non succede nulla.",//21
     "MOV AX, 31",//22
@@ -35,13 +36,13 @@ const string testoCaselle[56] = {
     "Ti fermi a accarezzare un gatto. Stai fermo un turno",//24
     "Oh! Il capolinea del Gello Express.",//25
     "Passi davanti a un bar, la tentazione di fermarti è forte ma vai avanti.",//26
-    "",//27
-    "",//28
+    "Iti riders crew ti ha approcciato, tira un dado, se minore di 4 resta 2 turni a subire i loro rumori molesti",//27
+    "È lunedì, lancia un dado, se minore di 6 hai finito le ore di assenza con Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
     "Febbraio ha 29 giorni solo ogni 4 anni... E tu sei finito nella casella 29 proprio adesso. Aspetta che arrivi il prossimo anno bisestile e resta fermo 4 turni!",//29
     "Devi andare alla palestra ma la stradina è di nuovo piena di fango, fai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
     "Hey non puoi fermarti qui ci sono dei lavori in corso! Avanza di uno e non disturbare gli operai.",//31
     "Mentre passi osservi il cantiere dei lavori sulla piscina dell'I.T.TS.",//32
-    "",//33
+    "Il signor Buongiorno ti da il buongiorno e con esso un aiuto emotivo. Tira di nuovo!",//33
     "Wow qui è pieno di diramazioni, ne scegli una e vai avanti.",//34
     "La strada è chiusa torna indietro e passa da un altra.",//35
     "Un suino ti offre un passaggio in cambio di qualche carezza. Avanza di 5 caselle",//36
@@ -52,19 +53,20 @@ const string testoCaselle[56] = {
     "Stai passando davanti a una casetta molto carina, bella vista.",//41
     "Stai passando davanti a una casetta molto carina, bella vista.",//42
     "Vedi una ragazza venire verso di te, la tua paura per le donne ti fa correre per non farti approcciare. Avanza di due caselle.",//43
-    "",//44
-    "",//45
-    "",//46
-    "",//47
-    "",//48
-    "",//49
-    "",//50
-    "",//51
-    "",//52
-    "",//53
-    "",//54
-    "",//55
-    "",//56
+    "Tira un dado , se esce 4 vai avanti di due caselle altrimenti torna indietro di 2.",//44
+    "Qui sei al sicuro, per ora.",//45
+    "La professoressa Ricci ti interroga, stai fermo 2 turni a parlare di Petrarca.",//46
+    "Ci sono 4 cartelli che ti dicono di andare a sinistra. Tira 4 dadi se esce 4 volte 1 sei così stupido da non vederne nessuno e vai a desta finendo nella casella 17.",//47
+    "Hai incontrato Pietro per strada, il solo vederlo ti ha dato la carica per aumentare il passo. Tira di nuovo.",//48
+    "C'è un muro che separa te e la vittoria, letteralmente, prova a scavalcarlo. Tira 4 dadi, se sono esce 4 volte 1 hai vinto, altrimenti continua per la strada normale.",//49
+    "Manca poco ormai, sei motivato a aumentare il passo. Avanza di una casella.",//50
+    "Ritieniti fortunato a essere qui...",//51
+    "La casella 52 non mi piace, ritira i dadi.",//52
+    "Ti sei addormentato sul bus! Aspetta la prossima coincidenza stando fermo un turno.",//53
+    "Avanza di una casella, è un bene vero? Vero?",//54
+    "Sì, chiunque abbia progettato questo gioco ti vuole male. Torna indietro di 2 caselle.",//55
+    "Così vicino… eppure così lontano. Rimbalzi indietro di 10 caselle!",//56
+    "fine"//fine (casella dove va quando vinci)
 };
 
 
@@ -83,6 +85,11 @@ struct Player {
     float initX, initY;
     int casella = 0;
     bool staGiocando = false;
+    bool zoppo = false;
+    bool turnoDoppio = false;
+    bool turniAlterni = false;
+    int turniZoppo = 0;
+    int turniFermo = 0;
     sf::Color colore;
     sf::CircleShape shape; // Rappresenta il giocatore con un cerchio
 
@@ -305,6 +312,10 @@ void input() {
             partita = true;
             pausa = false;
         }
+        else if (crediti) {
+            crediti = false;
+            menu = true;
+        }
     }
     if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         escReleased = true; // Permette di nuovo la pressione dopo il rilascio
@@ -519,422 +530,176 @@ void turnoPlayer(Player& player) {
 void controlloCasella(Player& player) {
     // Gestisci il comportamento quando un giocatore finisce su una casella
 
+    if (player.casella > 56) {
+        player.casella = 57;
+    }
 
-/*    switch (player.casella) {
+    if (player.casella % 2 == 0) {
+        if (player.turnoDoppio) {
+            player.turnoDoppio = false;
+        }
+    }
+    else {
+        if (player.turniAlterni) {
+            player.turniAlterni = false;
+        }
+    }
+
+   switch (player.casella) {
     case 0:
         break;
     case 1:
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
-        turnoDoppio[player.numero] = true;
+        player.turnoDoppio = true;
         break;
     case 2:
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         player.casella += 2;
         break;
     case 3:
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella -= 2;
         break;
     case 4:
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         break;
     case 5:
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 6:
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
-        turniAlterni[player.numero] = true;
+        player.turniAlterni = true;
         break;
     case 7:
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 8:
-        testoCasella = "Zani ti fa compagnia nelle caselle 7, 8 e 9";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         break;
     case 9:
-        testoCasella = "Zani ti fa compagnia nelle caselle 7, 8 e 9";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 10:
-        testoCasella = "Peccato, sei inciampato sul pavimento rotto del Fermi, cadi al indietro di una casella!";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         player.casella -= 1;
         break;
     case 11:
-        testoCasella = "Una casella vuota, che noia.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 12:
-        testoCasella = "Il karma non è dalla tua parte. Vai alla casella 5.";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         player.casella = 5;
         break;
     case 13:
-        testoCasella = "La casella 13 non perdona: qui è tutto un fallimento! Non hai altra scelta che tornare all’inizio. Riprova, sarà meglio la prossima volta.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella = 0;
         break;
     case 14:
-        testoCasella = "Che c'è ti aspettavi succedesse qualcosa in ogni casella?";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         break;
     case 15:
-        testoCasella = "Che fortuna, una fermata del Gello Express! Avanza fino alla casella 25.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella = 25;
         break;
     case 16:
-        testoCasella = "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e balbetterai. Per i prossimi 3 turni tira un dado invece che 2.";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
-        zoppo[player.numero] = true;
-        turniZoppo[player.numero] = 3;
+        player.zoppo = true;
+        player.turniZoppo = 3;
         break;
     case 17:
-        testoCasella = "Goditi un attimo di quiete, fidati ti servira";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 18:
-        testoCasella = "C'è fila in bagno, aspetta un turno.";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
-        turnoFattibile[player.numero] = false;
+        player.turniFermo = 1;
         break;
     case 19:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        //
         break;
     case 20:
-        testoCasella = "Qui c'è un albero molto bello.";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         break;
     case 21:
-        testoCasella = "Un signore per strada ti saluta, non succede nulla.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 22:
-        testoCasella = "MOV AX, 31";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
         player.casella = 31;
         break;
     case 23:
-        testoCasella = "Trovi una bici, la usi per avanzare di 3 caselle poi ti si rompe.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella += 3;
         break;
     case 24:
-        testoCasella = "Ti fermi a accarezzare un gatto. Stai fermo un turno";
-        sleep(100);
-        if (turnoDoppio[player.numero]) {
-            turnoDoppio[player.numero] = false;
-        }
-        turnoFattibile[player.numero] = false;
-        turniFermo[player.numero] = 1;
+        player.turniFermo = 1;
         break;
     case 25:
-        testoCasella = "Oh! Il capolinea del Gello Express.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 26:
-        testoCasella = "Passi davanti a un bar, la tentazione di fermarti è forte ma vai avanti.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         break;
     case 27:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        //
         break;
     case 28:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        //
         break;
     case 29:
-        testoCasella = "Febbraio ha 29 giorni solo ogni 4 anni... E tu sei finito nella casella 29 proprio adesso. Aspetta che arrivi il prossimo anno bisestile e resta fermo 4 turni!";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
-        turnoFattibile[player.numero] = false;
-        turniFermo[player.numero] = 4;
+        player.turniFermo = 4;
         break;
     case 30:
-        testoCasella = "Devi andare alla palestra ma la stradina è di nuovo piena di fango, fai il giro per passare dal viale Adua. Torna indietro di 4 caselle.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         player.casella -= 4;
         break;
     case 31:
-        testoCasella = "Hey non puoi fermarti qui ci sono dei lavori in corso! Avanza di uno e non disturbare gli operai.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella += 1;
         break;
     case 32:
-        testoCasella = "Mentre passi osservi il cantiere dei lavori sulla piscina del iti.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         break;
     case 33:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        //
         break;
     case 34:
-        testoCasella = "Wow qui è pieno di diramazioni, ne scegli una e vai avanti.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         break;
     case 35:
-        testoCasella = "La strada è chiusa torna indietro e passa da un altra.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella -= 1;
         break;
     case 36:
-        testoCasella = "Un suino ti offre un passaggio in cambio di qualche carezza. Avanza di 5 caselle";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         player.casella += 5;
         break;
     case 37:
-        testoCasella = "Non succede nulla ma c'è un bel paesaggio quindi sei felice.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 38:
-        testoCasella = "Non succede nulla ma c'è un bel paesaggio quindi sei felice.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         break;
     case 39:
-        testoCasella = "Una vespa ti entra nei pantaloni e ti punge un polpaccio, il dolore ti rallenta. Torna indietro di una casella.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella -= 1;
         break;
     case 40:
-        testoCasella = "Sciaulino ti chiama su discord per vedere i reels, il suo unemployment ti contagia e perdi 2 ore su Instagram. Torna indietro di 2 caselle.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         player.casella -= 2;
         break;
     case 41:
-        testoCasella = "Stai passando davanti a una casetta molto carina, bella vista.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 42:
-        testoCasella = "Stai passando davanti a una casetta molto carina, bella vista.";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
         break;
     case 43:
-        testoCasella = "Vedi una ragazza venire verso di te, la tua paura per le donne ti fa correre per non farti approcciare. Avanza di due caselle.";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         player.casella += 2;
         break;
     case 44:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        //
         break;
     case 45:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 46:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        player.turniFermo = 2;
         break;
     case 47:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        //
         break;
     case 48:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        //
         break;
     case 49:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        //
         break;
     case 50:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        player.casella += 1;
         break;
     case 51:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
         break;
     case 52:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        //
         break;
     case 53:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        player.turniFermo = 1;
         break;
     case 54:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        player.casella += 1;
         break;
     case 55:
-        testoCasella = "";
-        sleep(100);
-        if (turniAlterni[player.numero]) {
-            turniAlterni[player.numero] = false;
-        }
+        player.casella -= 2;
         break;
     case 56:
-        testoCasella = "";
-        sleep(100);
-        if (turniDoppio[player.numero]) {
-            turniDoppio[player.numero] = false;
-        }
+        player.casella -= 10;
         break;
     default:
         break;
-    } */
+    } 
 
 
     const float casellaX = WIDTH * 0.073;
