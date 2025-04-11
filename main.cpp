@@ -197,6 +197,7 @@ Sprite d6(0, 0, 0.4, "data/d6.png");
 bool suBottone(int nBottone);
 int tiraDadi(int nDadi);
 void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
+void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& numeroGiocatori);
 void creazionePausa();
 void creazioneCrediti(sf::Text& testo);
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
@@ -205,7 +206,8 @@ void drawPausa(sf::RectangleShape shape);
 void drawCrediti(sf::Text testo);
 void drawDado();
 void drawCasella();
-void input();
+void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text numeroGiocatori);
+void input(sf::Text& n);
 void update();
 void turnoPlayer(Player& player);
 void controlloCasella(Player& player);
@@ -217,8 +219,10 @@ bool partita = false;
 bool pausa = false;
 bool escPress = false;
 int totaleDadi;
+int n_player = 1;
 string testoCasella = "";
 vector<int> facciaDadi;
+
 
 
 int main() {
@@ -233,7 +237,12 @@ int main() {
     // Crea il menu
     sf::RectangleShape shape;
     sf::Text testoMenu;
+    sf::Text testoImpostazioni;
+    sf::Text n;
+    sf::Text numeroGiocatori;
+    n.setString(std::to_string(n_player));
     creazioneMenu(shape, testoMenu);
+    creazioneImpostazioni(shape, testoImpostazioni, n, numeroGiocatori); // Crea le impostazioni
     creazionePausa(); // Crea la pausa
     // Crea i crediti
     sf::Text testoCrediti;
@@ -242,10 +251,11 @@ int main() {
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
+            n.setString(std::to_string(n_player));
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            input();
+            input(n);
         }
 
         update();
@@ -257,6 +267,10 @@ int main() {
         else if (crediti) {
             drawCrediti(testoCrediti); // Disegna i crediti
         }
+        else if (impostazioni) {
+
+            drawImpostazioni(shape, testoImpostazioni, n, numeroGiocatori); // Disegna le impostazioni
+        }
         else if (partita) { // Disegna la partita
             drawPartita();
         }
@@ -267,33 +281,54 @@ int main() {
     }
 }
 
-void input() {
+void input(sf::Text& n) {
     // Gestione input nel menu
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menu) {
         if (suBottone(0)) { // Bottone START nel menu
             menu = false;
-            partita = true;
+            impostazioni = true;
         }
-        else if (suBottone(2)) { // Bottone CREDITI nel menu
+        else if (suBottone(1)) { // Bottone CREDITI nel menu
             crediti = true;
             menu = false;
         }
-        else if (suBottone(3)) { // Bottone ESCI nel menu
+        else if (suBottone(2)) { // Bottone ESCI nel menu
             window.close();
+        }
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && impostazioni) {
+        if (suBottone(3)) { // Bottone START nel menu
+            impostazioni = false;
+            partita = true;
+        }
+        else if (suBottone(4)) { // Bottone <
+            n_player--;
+            if (n_player < 1) n_player = 1; // Limite minimo
+            n.setString(std::to_string(n_player));
+            sf::FloatRect nBounds = n.getLocalBounds();
+            n.setOrigin(nBounds.width / 2, nBounds.height / 2);
+        }
+        else if (suBottone(5)) { // Bottone >
+            n_player++;
+            if (n_player > 4) n_player = 4; // Limite massimo (opzionale)
+            n.setString(std::to_string(n_player));
+            sf::FloatRect nBounds = n.getLocalBounds();
+            n.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
     }
 
     // Gestione input nella pausa
     else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && pausa) {
-        if (suBottone(2)) { // Bottone RIPRENDI
+        if (suBottone(6)) { // Bottone RIPRENDI
             pausa = false;
             partita = true;
         }
-        else if (suBottone(3)) { // Bottone TORNA AL MENU
+        else if (suBottone(7)) { // Bottone TORNA AL MENU
             menu = true;
             pausa = false;
         }
-        else if (suBottone(4)) { // Bottone ESCI DAL GIOCO
+        else if (suBottone(8)) { // Bottone ESCI DAL GIOCO
             window.close();
         }
     }
@@ -370,19 +405,49 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
     // Bottoni
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.52, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.58, WIDTH * 0.2, HEIGHT * 0.055, "IMPOSTAZIONI", sf::Color(128, 128, 128)));
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.64, WIDTH * 0.12, HEIGHT * 0.055, "CREDITI", sf::Color(40,40,255)));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.61, WIDTH * 0.12, HEIGHT * 0.055, "CREDITI", sf::Color(40, 40, 255)));
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
 }
+
+void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& numeroGiocatori) {
+    shape.setSize(sf::Vector2f(WIDTH / 1.8, HEIGHT / 1.8));
+    shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
+    shape.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 2));
+    testo.setFont(font);
+    testo.setString("IMPOSTAZIONI");
+    testo.setCharacterSize(WIDTH / 22);
+    testo.setFillColor(sf::Color::Black);
+    sf::FloatRect textBounds = testo.getLocalBounds();
+    testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
+    testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
+    numeroGiocatori.setFont(font);
+    numeroGiocatori.setString("n di giocatori non CPU:");
+    numeroGiocatori.setCharacterSize(WIDTH / 40);
+    numeroGiocatori.setFillColor(sf::Color::Black);
+    sf::FloatRect numGiocatoriBounds = numeroGiocatori.getLocalBounds();
+    numeroGiocatori.setOrigin(numGiocatoriBounds.width / 2, numGiocatoriBounds.height / 2);
+    numeroGiocatori.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 1.9));
+    n.setFont(font);
+    n.setCharacterSize(WIDTH / 22);
+    n.setFillColor(sf::Color::Black);
+    n.setString(std::to_string(n_player));
+    sf::FloatRect nBounds = n.getLocalBounds();
+    n.setOrigin(nBounds.width / 2, nBounds.height / 2);
+    n.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 1.75));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.45, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
+    bottoni.push_back(Bottone(HEIGHT * 0.7, HEIGHT * 0.6, WIDTH * 0.05, HEIGHT * 0.06, "<", sf::Color::Red));
+    bottoni.push_back(Bottone(HEIGHT * 1.08, HEIGHT * 0.6, WIDTH * 0.05, HEIGHT * 0.06, ">", sf::Color::Green));
+}
+
 
 
 void creazionePausa() {
     // Bottone RIPRENDI
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 3, WIDTH * 0.1, HEIGHT * 0.1, "RIPRENDI", sf::Color::Blue));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 3, WIDTH * 0.14, HEIGHT * 0.11, "RIPRENDI", sf::Color::Blue));
     // Bottone TORNA AL MENU
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2, WIDTH * 0.1, HEIGHT * 0.1, "TORNA AL\n   MENU", sf::Color::Red));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 2, WIDTH * 0.14, HEIGHT * 0.11, "TORNA AL\n   MENU", sf::Color::Red));
     // Bottone ESCI DAL GIOCO
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.1, HEIGHT * 0.1, "ESCI DAL\n  GIOCO", sf::Color::Green));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT / 1.5, WIDTH * 0.14, HEIGHT * 0.11, "ESCI DAL\n  GIOCO", sf::Color::Green));
 }
 
 
@@ -398,9 +463,8 @@ void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     window.draw(shape); // Disegna il rettangolo
     window.draw(testo); // Disegna il testo
     bottoni[0].draw(); // Disegna il bottone INIZIA
-    bottoni[1].draw(); // Disegna il bottone IMPOSTAZIONI
-    bottoni[2].draw(); // Disegna il bottone CREDITI
-    bottoni[3].draw(); // Disegna il bottone ESCI
+    bottoni[1].draw(); // Disegna il bottone CREDITI
+    bottoni[2].draw(); // Disegna il bottone ESCI
 }
 
 
@@ -415,11 +479,22 @@ void drawPartita() {
 }
 
 
+void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text numeroGiocatori) {
+    window.draw(shape); // Disegna il rettangolo di sfondo
+    window.draw(testo); // Disegna il testo delle impostazioni
+    window.draw(n); // Disegna il testo dei numeri
+    window.draw(numeroGiocatori); // Disegna il testo dei numeri
+    bottoni[3].draw();  // Disegna il bottone INIZIA PARTITA
+    bottoni[4].draw();  // Disegna il bottone <
+    bottoni[5].draw();  // Disegna il bottone >
+
+}
+
 void drawPausa(sf::RectangleShape shape) {
     window.draw(shape); // Disegna il rettangolo di sfondo
-    bottoni[2].draw();  // Disegna il bottone RIPRENDI  
-    bottoni[3].draw();  // Disegna il bottone TORNA AL MENU
-    bottoni[4].draw();  // Disegna il bottone ESCI DAL GIOCO
+    bottoni[6].draw();  // Disegna il bottone RIPRENDI  
+    bottoni[7].draw();  // Disegna il bottone TORNA AL MENU
+    bottoni[8].draw();  // Disegna il bottone ESCI DAL GIOCO
 }
 
 
