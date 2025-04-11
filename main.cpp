@@ -141,12 +141,12 @@ struct Bottone {
 
         testo.setFont(font);
         testo.setString(testoS);
-        testo.setCharacterSize(WIDTH/35);
+        testo.setCharacterSize(WIDTH / 35);
 
         testo.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = testo.getLocalBounds();
         testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
-        testo.setPosition(sf::Vector2f(x*0.995, y*0.975));  // Posiziona il testo al centro
+        testo.setPosition(sf::Vector2f(x * 0.995, y * 0.975));  // Posiziona il testo al centro
     }
 
     void draw() {
@@ -197,7 +197,7 @@ Sprite d6(0, 0, 0.4, "data/d6.png");
 bool suBottone(int nBottone);
 int tiraDadi(int nDadi);
 void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
-void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& numeroGiocatori);
+void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori);
 void creazionePausa();
 void creazioneCrediti(sf::Text& testo);
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
@@ -206,8 +206,8 @@ void drawPausa(sf::RectangleShape shape);
 void drawCrediti(sf::Text testo);
 void drawDado();
 void drawCasella();
-void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text numeroGiocatori);
-void input(sf::Text& n);
+void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text c, sf::Text numeroGiocatori);
+void input(sf::Text& n, sf::Text& c);
 void update();
 void turnoPlayer(Player& player);
 void controlloCasella(Player& player);
@@ -216,10 +216,12 @@ void sleep(int ms);
 bool crediti = false;
 bool menu = true;
 bool partita = false;
+bool impostazioni = false;
 bool pausa = false;
 bool escPress = false;
 int totaleDadi;
 int n_player = 1;
+int n_cpu = 3;
 string testoCasella = "";
 vector<int> facciaDadi;
 
@@ -239,10 +241,12 @@ int main() {
     sf::Text testoMenu;
     sf::Text testoImpostazioni;
     sf::Text n;
+    sf::Text c;
     sf::Text numeroGiocatori;
     n.setString(std::to_string(n_player));
+    c.setString(std::to_string(n_cpu));
     creazioneMenu(shape, testoMenu);
-    creazioneImpostazioni(shape, testoImpostazioni, n, numeroGiocatori); // Crea le impostazioni
+    creazioneImpostazioni(shape, testoImpostazioni, n, c, numeroGiocatori); // Crea le impostazioni
     creazionePausa(); // Crea la pausa
     // Crea i crediti
     sf::Text testoCrediti;
@@ -252,10 +256,11 @@ int main() {
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             n.setString(std::to_string(n_player));
+            c.setString(std::to_string(n_cpu));
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            input(n);
+            input(n, c);
         }
 
         update();
@@ -269,7 +274,7 @@ int main() {
         }
         else if (impostazioni) {
 
-            drawImpostazioni(shape, testoImpostazioni, n, numeroGiocatori); // Disegna le impostazioni
+            drawImpostazioni(shape, testoImpostazioni, n, c, numeroGiocatori); // Disegna le impostazioni
         }
         else if (partita) { // Disegna la partita
             drawPartita();
@@ -281,7 +286,7 @@ int main() {
     }
 }
 
-void input(sf::Text& n) {
+void input(sf::Text& n, sf::Text& c) {
     // Gestione input nel menu
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menu) {
         if (suBottone(0)) { // Bottone START nel menu
@@ -311,24 +316,38 @@ void input(sf::Text& n) {
         }
         else if (suBottone(5)) { // Bottone >
             n_player++;
-            if (n_player > 4) n_player = 4; // Limite massimo (opzionale)
+            if (n_player + n_cpu > 4) n_player--; // Limite massimo (opzionale)
             n.setString(std::to_string(n_player));
             sf::FloatRect nBounds = n.getLocalBounds();
             n.setOrigin(nBounds.width / 2, nBounds.height / 2);
+        }
+        else if (suBottone(6)) { // Bottone <
+            n_cpu--;
+            if (n_cpu < 1) n_cpu = 1; // Limite minimo
+            c.setString(std::to_string(n_cpu));
+            sf::FloatRect nBounds = c.getLocalBounds();
+            c.setOrigin(nBounds.width / 2, nBounds.height / 2);
+        }
+        else if (suBottone(7)) { // Bottone >
+            n_cpu++;
+            if (n_cpu + n_player > 4) n_cpu--; // Limite massimo (opzionale)
+            c.setString(std::to_string(n_cpu));
+            sf::FloatRect nBounds = c.getLocalBounds();
+            c.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
     }
 
     // Gestione input nella pausa
     else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && pausa) {
-        if (suBottone(6)) { // Bottone RIPRENDI
+        if (suBottone(8)) { // Bottone RIPRENDI
             pausa = false;
             partita = true;
         }
-        else if (suBottone(7)) { // Bottone TORNA AL MENU
+        else if (suBottone(9)) { // Bottone TORNA AL MENU
             menu = true;
             pausa = false;
         }
-        else if (suBottone(8)) { // Bottone ESCI DAL GIOCO
+        else if (suBottone(10)) { // Bottone ESCI DAL GIOCO
             window.close();
         }
     }
@@ -409,7 +428,7 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
 }
 
-void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& numeroGiocatori) {
+void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori) {
     shape.setSize(sf::Vector2f(WIDTH / 1.8, HEIGHT / 1.8));
     shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
     shape.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 2));
@@ -421,22 +440,31 @@ void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text&
     testo.setOrigin(textBounds.width / 2, textBounds.height / 2);
     testo.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 3));
     numeroGiocatori.setFont(font);
-    numeroGiocatori.setString("n di giocatori non CPU:");
+    numeroGiocatori.setString("Player                          CPU");
     numeroGiocatori.setCharacterSize(WIDTH / 40);
     numeroGiocatori.setFillColor(sf::Color::Black);
     sf::FloatRect numGiocatoriBounds = numeroGiocatori.getLocalBounds();
     numeroGiocatori.setOrigin(numGiocatoriBounds.width / 2, numGiocatoriBounds.height / 2);
-    numeroGiocatori.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 1.9));
+    numeroGiocatori.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT * 0.45));
     n.setFont(font);
     n.setCharacterSize(WIDTH / 22);
     n.setFillColor(sf::Color::Black);
     n.setString(std::to_string(n_player));
     sf::FloatRect nBounds = n.getLocalBounds();
     n.setOrigin(nBounds.width / 2, nBounds.height / 2);
-    n.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 1.75));
-    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.45, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
-    bottoni.push_back(Bottone(HEIGHT * 0.7, HEIGHT * 0.6, WIDTH * 0.05, HEIGHT * 0.06, "<", sf::Color::Red));
-    bottoni.push_back(Bottone(HEIGHT * 1.08, HEIGHT * 0.6, WIDTH * 0.05, HEIGHT * 0.06, ">", sf::Color::Green));
+    n.setPosition(sf::Vector2f(WIDTH / 2.55, HEIGHT * 0.5));
+    c.setFont(font);
+    c.setCharacterSize(WIDTH / 22);
+    c.setFillColor(sf::Color::Black);
+    c.setString(std::to_string(n_cpu));
+    sf::FloatRect cBounds = n.getLocalBounds();
+    c.setOrigin(cBounds.width / 2, cBounds.height / 2);
+    c.setPosition(sf::Vector2f(WIDTH / 1.62, HEIGHT * 0.5));
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.63, WIDTH * 0.12, HEIGHT * 0.055, "INIZIA", sf::Color::Yellow));
+    bottoni.push_back(Bottone(HEIGHT * 0.6, HEIGHT * 0.52, WIDTH * 0.051, HEIGHT * 0.06, "<", sf::Color::Red));
+    bottoni.push_back(Bottone(HEIGHT * 0.8, HEIGHT * 0.52, WIDTH * 0.051, HEIGHT * 0.06, ">", sf::Color::Red));
+    bottoni.push_back(Bottone(HEIGHT * 1.01, HEIGHT * 0.52, WIDTH * 0.051, HEIGHT * 0.06, "<", sf::Color::Green));
+    bottoni.push_back(Bottone(HEIGHT * 1.2, HEIGHT * 0.52, WIDTH * 0.051, HEIGHT * 0.06, ">", sf::Color::Green));
 }
 
 
@@ -454,7 +482,7 @@ void creazionePausa() {
 void creazioneCrediti(sf::Text& testo) {
     testo.setFont(font);
     testo.setString("GRAZIE PER STAR GIOCANDO AL NOSTRO GIOCO DELL'OCA  By: \n \n  - Totti Alberto - \n  - Cai Dal Pino Gabriele - \n  - Arinci Andrea -");
-    
+
 }
 
 
@@ -474,27 +502,29 @@ void drawPartita() {
     for (auto& player : players) {
         player.draw();
 
-    drawCasella();
+        drawCasella();
     }
 }
 
 
-void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text numeroGiocatori) {
+void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text c, sf::Text numeroGiocatori) {
     window.draw(shape); // Disegna il rettangolo di sfondo
     window.draw(testo); // Disegna il testo delle impostazioni
     window.draw(n); // Disegna il testo dei numeri
+    window.draw(c); // Disegna il testo dei numeri
     window.draw(numeroGiocatori); // Disegna il testo dei numeri
     bottoni[3].draw();  // Disegna il bottone INIZIA PARTITA
-    bottoni[4].draw();  // Disegna il bottone <
-    bottoni[5].draw();  // Disegna il bottone >
-
+    bottoni[4].draw();  // Disegna il bottone < player
+    bottoni[5].draw();  // Disegna il bottone > player
+    bottoni[6].draw();  // Disegna il bottone < cpu
+    bottoni[7].draw();  // Disegna il bottone > cpu
 }
 
 void drawPausa(sf::RectangleShape shape) {
     window.draw(shape); // Disegna il rettangolo di sfondo
-    bottoni[6].draw();  // Disegna il bottone RIPRENDI  
-    bottoni[7].draw();  // Disegna il bottone TORNA AL MENU
-    bottoni[8].draw();  // Disegna il bottone ESCI DAL GIOCO
+    bottoni[8].draw();  // Disegna il bottone RIPRENDI  
+    bottoni[9].draw();  // Disegna il bottone TORNA AL MENU
+    bottoni[10].draw();  // Disegna il bottone ESCI DAL GIOCO
 }
 
 
@@ -622,7 +652,7 @@ void controlloCasella(Player& player) {
         }
     }
 
-   switch (player.casella) {
+    switch (player.casella) {
     case 0:
         break;
     case 1:
@@ -776,7 +806,7 @@ void controlloCasella(Player& player) {
         break;
     default:
         break;
-    } 
+    }
 
 
     const float casellaX = WIDTH * 0.073;
