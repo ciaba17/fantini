@@ -9,45 +9,45 @@
 using namespace std;
 
 const string testoCaselle[58] = {
-    "Inizio",//inizio (casella 0)
-    "Pensavi fosse stato un tiro sfortunato 2 e 1, invece no!\n D'ora in poi ogni turnotira 4 dadi invece che 2,\nalmeno finché non atterri su una casella pari",//1
+    "Inizio",//0
+    "Pensavi fosse stato un tiro sfortunato 2 e 1, invece no!\n D'ora in poi ogni turnotira 4 dadi invece che 2,\nalmeno finche' non atterri su una casella pari",//1
     "La professoressa Pellegrini ha riconosciuto il tuo impegno e ha deciso di premiarti,\naumentando il tuo voto da 2 a 4. Avanza di due caselle!",//2
     "Che peccato! Torna indietro di 2 caselle.",//3
     "Una stradina molto tranquilla vicino a un laghetto.",//4
     "Una stradina molto tranquilla vicino a un laghetto.",//5
-    "Un inizio sfortunato, sei stato maledetto!\nResta fermo un turno dopo ogni tiro di dadi,\nl'unico modo per spezzare il marchio è atterrare su una casella dispari.",//6
+    "Un inizio sfortunato, sei stato maledetto!\nResta fermo un turno dopo ogni tiro di dadi,\nl'unico modo per spezzare il marchio e' atterrare su una casella dispari.",//6
     "Zani ti fa compagnia nelle caselle 7, 8 e 9",//7
     "Zani ti fa compagnia nelle caselle 7, 8 e 9",//8
     "Zani ti fa compagnia nelle caselle 7, 8 e 9",//9
     "Peccato, sei inciampato sul pavimento rotto del Fermi,\ncadi al indietro di una casella!",//10
     "Una casella vuota, che noia.",//11
-    "Il karma non è dalla tua parte. Vai alla casella 5.",//12
-    "La casella 13 non perdona: qui è tutto un fallimento!\nNon hai altra scelta che tornare all’inizio.\nRiprova, sarà meglio la prossima volta.",//13
-    "Che c'è ti aspettavi succedesse qualcosa in ogni casella?",//14
+    "Il karma non e' dalla tua parte. Vai alla casella 5.",//12
+    "La casella 13 non perdona: qui e' tutto un fallimento!\nNon hai altra scelta che tornare all'inizio.\nRiprova, sara' meglio la prossima volta.",//13
+    "Che c'e' ti aspettavi succedesse qualcosa in ogni casella?",//14
     "Che fortuna, una fermata del Gello Express! Avanza fino alla casella 25.",//15
-    "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e balbetterai.\nPer i prossimi 3 turni tira un dado invece che 2",//16
-    "Goditi un attimo di quiete, fidati ti servira",//17
-    "C'è fila in bagno, aspetta un turno.",//18
+    "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e \nbalbetterai. Per i prossimi 3 turni tira un dado invece che 2",//16
+    "Goditi un attimo di quiete, fidati ti servira'",//17
+    "C'e' fila in bagno, aspetta un turno.",//18
     "Tira 2 dadi, se esce lo stesso numero avanza di uno\naltrimenti torna indietro di 3 caselle!",//19
-    "Qui c'è un albero molto bello.",//20
+    "Qui c'e' un albero molto bello.",//20
     "Un signore per strada ti saluta, non succede nulla.",//21
     "MOV AX, 31",//22
     "Trovi una bici, la usi per avanzare di 3 caselle poi ti si rompe.",//23
     "Ti fermi a accarezzare un gatto. Stai fermo un turno",//24
     "Oh! Il capolinea del Gello Express.",//25
-    "Passi davanti a un bar, la tentazione di fermarti è forte ma vai avanti.",//26
+    "Passi davanti a un bar, la tentazione di fermarti e' forte ma vai avanti.",//26
     "Iti riders crew ti ha approcciato, tira un dado,\nse minore di 4 resta 2 turni a subire i loro rumori molesti",//27
-    "È lunedì, lancia un dado, se minore di 6 hai finito le ore di assenza\ncon Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
+    "E' lunedi', lancia un dado, se minore di 6 hai finito le ore di assenza\ncon Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
     "Febbraio ha 29 giorni solo ogni 4 anni...\nE tu sei finito nella casella 29 proprio adesso.\nAspetta che arrivi il prossimo anno bisestile e resta fermo 4 turni!",//29
-    "Devi andare alla palestra ma la stradina è di nuovo piena di fango,\nfai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
+    "Devi andare alla palestra ma la stradina e' di nuovo piena di fango,\nfai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
     "Hey non puoi fermarti qui ci sono dei lavori in corso!\nAvanza di uno e non disturbare gli operai.",//31
     "Mentre passi osservi il cantiere dei lavori sulla piscina dell'iti.",//32
     "Il signor Buongiorno ti da il buongiorno e con esso un aiuto emotivo. Tira di nuovo!",//33
-    "Wow qui è pieno di diramazioni, ne scegli una e vai avanti.",//34
-    "La strada è chiusa torna indietro e passa da un altra.",//35
+    "Wow qui e' pieno di diramazioni, ne scegli una e vai avanti.",//34
+    "La strada e' chiusa torna indietro e passa da un'altra.",//35
     "Un suino ti offre un passaggio in cambio di qualche carezza.\nAvanza di 5 caselle",//36
-    "Non succede nulla ma c'è un bel paesaggio quindi sei felice.",//37
-    "Non succede nulla ma c'è un bel paesaggio quindi sei felice.",//38
+    "Non succede nulla ma c'e' un bel paesaggio quindi sei felice.",//37
+    "Non succede nulla ma c'e' un bel paesaggio quindi sei felice.",//38
     "Una vespa ti entra nei pantaloni e ti punge un polpaccio,\nil dolore ti rallenta. Torna indietro di una casella",//39
     "Sciaulino ti chiama su discord per vedere i reels,\nil suo unemployment ti contagia e perdi 2 ore su Instagram. Torna indietro di 2 caselle.",//40
     "Stai passando davanti a una casetta molto carina, bella vista.",//41
@@ -56,24 +56,24 @@ const string testoCaselle[58] = {
     "Tira un dado , se esce 4 vai avanti di due caselle altrimenti torna indietro di 2.",//44
     "Qui sei al sicuro, per ora.",//45
     "La professoressa Ricci ti interroga,\nstai fermo 2 turni a parlare di Petrarca.",//46
-    "Ci sono 4 cartelli che ti dicono di andare a sinistra.\nTira 4 dadi se esce 4 volte 1 sei così stupido da non vederne nessuno\ne vai a desta finendo nella casella 17.",//47
+    "Ci sono 4 cartelli che ti dicono di andare a sinistra.\nTira 4 dadi se esce 4 volte 1 sei cosi' stupido da non vederne nessuno\ne vai a desta finendo nella casella 17.",//47
     "Hai incontrato Pietro per strada, il solo vederlo ti ha dato\nla carica per aumentare il passo. Tira di nuovo.",//48
-    "C'è un muro che separa te e la vittoria, letteralmente, prova a scavalcarlo.\nTira 4 dadi, se sono esce 4 volte 1 hai vinto,\naltrimenti continua per la strada normale.",//49
+    "C'e' un muro che separa te e la vittoria, letteralmente, prova a scavalcarlo.\nTira 4 dadi, se sono esce 4 volte 1 hai vinto,\naltrimenti continua per la strada normale.",//49
     "Manca poco ormai, sei motivato a aumentare il passo.\nAvanza di una casella.",//50
     "Ritieniti fortunato a essere qui...",//51
     "La casella 52 non mi piace, ritira i dadi.",//52
     "Ti sei addormentato sul bus!\nAspetta la prossima coincidenza stando fermo un turno.",//53
-    "Avanza di una casella, è un bene vero? Vero?",//54
-    "Sì, chiunque abbia progettato questo gioco ti vuole male.\nTorna indietro di 2 caselle.",//55
-    "Così vicino… eppure così lontano.\nRimbalzi indietro di 10 caselle!",//56
-    "fine"//fine (casella dove va quando vinci)
+    "Avanza di una casella, e' un bene vero? Vero?",//54
+    "Si', chiunque abbia progettato questo gioco ti vuole male.\nTorna indietro di 2 caselle.",//55
+    "Cosi' vicino… eppure cosi' lontano.\nRimbalzi indietro di 10 caselle!",//56
+    "fine"//57
 };
 
 
 const float WIDTH = 1920;
 const float HEIGHT = 1080;
 
-sf::RenderWindow window(sf::VideoMode(1920, 1080), "gioco dell'oca"); // Crea l'oggetto finestra
+sf::RenderWindow window(sf::VideoMode(1920, 1080), "Gioco dell'oca"); // Crea l'oggetto finestra
 sf::Event event; // Crea gestore eventi
 sf::Font font;
 
@@ -88,18 +88,21 @@ struct Player {
     bool staGiocando = false;
     bool turnoDoppio = false;
     bool turniAlterni = false;
+    bool isCpu;
     int turniZoppo = 0;
     int turniFermo = 0;
     int nTurno=0;
     sf::Color colore;
     sf::CircleShape shape; // Rappresenta il giocatore con un cerchio
 
-    Player(string nome, sf::Color colore, int numero, int x, int y) {
+
+    Player(string nome, sf::Color colore, int numero, int x, int y, bool isCpu) {
         this->x = initX = x;
         this->y = initY = y;
         this->numero = numero;
         this->nome = nome;
         this->colore = colore;
+        this->isCpu = isCpu;
         shape.setRadius(WIDTH * 0.008); // Imposta il raggio della "pietra" che rappresenta il giocatore
         shape.setFillColor(colore);
         shape.setOutlineColor(sf::Color::Black);// Mette il colore del bordo pedone
@@ -234,6 +237,7 @@ int nCpu = 3;
 int nDadi;
 int nTurno;
 vector<int> facciaDadi;
+string testoCasellaStr;
 
 
 
@@ -242,10 +246,10 @@ int main() {
     mappa.sprite.setScale(0.8, 0.85); // Risetta la scala della mappa
     font.loadFromFile("data/arial.ttf"); // Carica il font
     // Crea i player
-    players.push_back(Player("PLY 1", sf::Color::Red, 1, WIDTH * 0.2745, HEIGHT * 2.6669 / 4));
-    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH * 0.2995, HEIGHT * 2.6669 / 4));
-    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH * 0.2745, HEIGHT * 2.796 / 4));
-    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH * 0.2995, HEIGHT * 2.796 / 4));
+    players.push_back(Player("PLY 1", sf::Color::Red, 1, WIDTH * 0.2745, HEIGHT * 2.6669 / 4, false));
+    players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH * 0.2995, HEIGHT * 2.6669 / 4, true));
+    players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH * 0.2745, HEIGHT * 2.796 / 4, true));
+    players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH * 0.2995, HEIGHT * 2.796 / 4, true));
     // Crea le impostazioni grafiche del gioco
     // Menu
     sf::RectangleShape shape; // Rettangolo bianco di sfondo
@@ -320,6 +324,12 @@ void input(sf::Text& n, sf::Text& c) {
         if (suBottone(3)) { // Bottone START nel menu
             impostazioni = false;
             partita = true;
+            for (int i = 0; i < nPlayer; i++) {
+                players[i].isCpu = false; // Il primo giocatore inizia il turno
+            }
+            for (int i = 0; i < 4 - (nPlayer + nCpu); i++) {
+                players.pop_back(); // Rimuove i giocatori non selezionati
+            }
         }
         else if (suBottone(4) && nPlayer > 1) { // Bottone < nPlayer
             nPlayer--;
@@ -386,6 +396,10 @@ void update() {
         for (auto& player : players) {
             if (player.staGiocando) {
                 turnoPlayer(player);
+                if (!player.isCpu)
+                    testoCasellaStr = testoCaselle[player.casella]; // Imposta il testo della casella
+                else
+                    testoCasellaStr = "La CPU sta giocando";
             }
         }
 
@@ -492,7 +506,7 @@ void creazioneCasella(sf::Text& testoCasella, sf::RectangleShape& riquadroCasell
     riquadroCasella.setPosition(WIDTH * 2.55f / 4, HEIGHT * 3.4f / 4);
 
     testoCasella.setFont(font);
-    testoCasella.setString(testoCaselle[players[1].casella]);
+    testoCasella.setString("");
     testoCasella.setCharacterSize(WIDTH / 35);
     testoCasella.setFillColor(sf::Color::Black);
 
@@ -549,6 +563,7 @@ void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::
     bottoni[7].draw();  // Disegna il bottone > cpu
 }
 
+
 void drawPausa(sf::RectangleShape shape) {
     window.draw(shape); // Disegna il rettangolo di sfondo
     bottoni[8].draw();  // Disegna il bottone RIPRENDI  
@@ -565,9 +580,10 @@ void drawCrediti(sf::Text testo) {
 void drawDado() {
     int x, y;
 
+    
     // Itera per ogni dado
     for (int i = 0; i < facciaDadi.size(); i++) {
-        // Imposta la posizione del dado in base al numero del dado
+        // Imposta la posizione del dado in base al numero del dado disegnato
         switch (i) {
         case 0:
             x = y = WIDTH * 0.35 / 4;
@@ -625,7 +641,7 @@ void drawDado() {
 
 void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella) {
     testoCasella.setCharacterSize(36);
-    testoCasella.setString(testoCaselle[players[1].casella]);
+    testoCasella.setString(testoCasellaStr);
     window.draw(riquadroCasella);
     window.draw(testoCasella);
 }
@@ -644,7 +660,7 @@ int tiraDadi(int nDadi) {
 
     for (int i = 0; i < nDadi; i++) {
         if (dadi[i] != dadi[0]) {
-            return 0;//NON TUTTI UGUALI
+            return 0; // NON TUTTI UGUALI
         }
     }
     return 1; // TUTTI UGUALI
