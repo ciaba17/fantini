@@ -101,8 +101,8 @@ struct Player {
         this->colore = colore;
         shape.setRadius(WIDTH * 0.008); // Imposta il raggio della "pietra" che rappresenta il giocatore
         shape.setFillColor(colore);
-        shape.setOutlineColor(sf::Color::Black);//mette il colore del bordo pedone
-        shape.setOutlineThickness(2);//mette lo spessore al bordo pedone
+        shape.setOutlineColor(sf::Color::Black);// Mette il colore del bordo pedone
+        shape.setOutlineThickness(3);// Mette lo spessore al bordo pedone
         setPosition(x, y);
     }
 
@@ -135,6 +135,7 @@ struct Bottone {
 
         shape.setSize(sf::Vector2f(width, height));
         shape.setOutlineColor(sf::Color::Black);
+        shape.setOutlineThickness(3);
         shape.setFillColor(colore);
         shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
         shape.setPosition(sf::Vector2f(x, y));
@@ -197,15 +198,16 @@ Sprite d6(0, 0, 0.4, "data/d6.png");
 bool suBottone(int nBottone);
 int tiraDadi(int nDadi);
 void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
-void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori);
+void creazioneImpostazioni(sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori);
 void creazionePausa();
 void creazioneCrediti(sf::Text& testo);
+void creazioneCasella(sf::Text& testoCasella, sf::RectangleShape& riquadroCasella);    
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
 void drawPartita();
 void drawPausa(sf::RectangleShape shape);
 void drawCrediti(sf::Text testo);
 void drawDado();
-void drawCasella();
+void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella);
 void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text c, sf::Text numeroGiocatori);
 void input(sf::Text& n, sf::Text& c);
 void update();
@@ -220,9 +222,8 @@ bool impostazioni = false;
 bool pausa = false;
 bool escPress = false;
 int totaleDadi;
-int n_player = 1;
-int n_cpu = 3;
-string testoCasella = "";
+int nPlayer = 1;
+int nCpu = 3;
 vector<int> facciaDadi;
 
 
@@ -236,27 +237,30 @@ int main() {
     players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH * 0.2995, HEIGHT * 2.6669 / 4));
     players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH * 0.2745, HEIGHT * 2.796 / 4));
     players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH * 0.2995, HEIGHT * 2.796 / 4));
-    // Crea il menu
-    sf::RectangleShape shape;
+    // Crea le impostazioni grafiche del gioco
+    // Menu
+    sf::RectangleShape shape; // Rettangolo bianco di sfondo
     sf::Text testoMenu;
+    creazioneMenu(shape, testoMenu);
+    // Impostazioni
     sf::Text testoImpostazioni;
     sf::Text n;
     sf::Text c;
     sf::Text numeroGiocatori;
-    n.setString(std::to_string(n_player));
-    c.setString(std::to_string(n_cpu));
-    creazioneMenu(shape, testoMenu);
-    creazioneImpostazioni(shape, testoImpostazioni, n, c, numeroGiocatori); // Crea le impostazioni
-    creazionePausa(); // Crea la pausa
-    // Crea i crediti
+    creazioneImpostazioni(testoImpostazioni, n, c, numeroGiocatori); // Crea le impostazioni
+    // Caselle
+    sf::Text testoCasella;
+    sf::RectangleShape riquadroCasella;
+    creazioneCasella(testoCasella, riquadroCasella);
+    // Crediti
     sf::Text testoCrediti;
     creazioneCrediti(testoCrediti);
+    // Pausa
+    creazionePausa(); // Crea la pausa
 
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
-            n.setString(std::to_string(n_player));
-            c.setString(std::to_string(n_cpu));
             if (event.type == sf::Event::Closed)
                 window.close();
 
@@ -265,6 +269,7 @@ int main() {
 
         update();
 
+        // Draw
         window.clear(sf::Color::Cyan);
         if (menu) { // Disegna il menu
             drawMenu(shape, testoMenu);
@@ -273,11 +278,11 @@ int main() {
             drawCrediti(testoCrediti); // Disegna i crediti
         }
         else if (impostazioni) {
-
             drawImpostazioni(shape, testoImpostazioni, n, c, numeroGiocatori); // Disegna le impostazioni
         }
         else if (partita) { // Disegna la partita
             drawPartita();
+            drawCasella(testoCasella, riquadroCasella);
         }
         else if (pausa) { // Disegna la pausa
             drawPausa(shape);
@@ -308,30 +313,30 @@ void input(sf::Text& n, sf::Text& c) {
             partita = true;
         }
         else if (suBottone(4)) { // Bottone <
-            n_player--;
-            if (n_player < 1) n_player = 1; // Limite minimo
-            n.setString(std::to_string(n_player));
+            nPlayer--;
+            if (nPlayer < 1) nPlayer = 1; // Limite minimo
+            n.setString(std::to_string(nPlayer));
             sf::FloatRect nBounds = n.getLocalBounds();
             n.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
         else if (suBottone(5)) { // Bottone >
-            n_player++;
-            if (n_player + n_cpu > 4) n_player--; // Limite massimo (opzionale)
-            n.setString(std::to_string(n_player));
+            nPlayer++;
+            if (nPlayer + nCpu > 4) nPlayer--; // Limite massimo (opzionale)
+            n.setString(std::to_string(nPlayer));
             sf::FloatRect nBounds = n.getLocalBounds();
             n.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
         else if (suBottone(6)) { // Bottone <
-            n_cpu--;
-            if (n_cpu < 1) n_cpu = 1; // Limite minimo
-            c.setString(std::to_string(n_cpu));
+            nCpu--;
+            if (nCpu < 1) nCpu = 1; // Limite minimo
+            c.setString(std::to_string(nCpu));
             sf::FloatRect nBounds = c.getLocalBounds();
             c.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
         else if (suBottone(7)) { // Bottone >
-            n_cpu++;
-            if (n_cpu + n_player > 4) n_cpu--; // Limite massimo (opzionale)
-            c.setString(std::to_string(n_cpu));
+            nCpu++;
+            if (nCpu + nPlayer > 4) nCpu--; // Limite massimo (opzionale)
+            c.setString(std::to_string(nCpu));
             sf::FloatRect nBounds = c.getLocalBounds();
             c.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
@@ -428,10 +433,7 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo) {
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.7, WIDTH * 0.24, HEIGHT * 0.055, "ESCI DAL GIOCO", sf::Color::Red));
 }
 
-void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori) {
-    shape.setSize(sf::Vector2f(WIDTH / 1.8, HEIGHT / 1.8));
-    shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
-    shape.setPosition(sf::Vector2f(WIDTH / 2, HEIGHT / 2));
+void creazioneImpostazioni(sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori) {
     testo.setFont(font);
     testo.setString("IMPOSTAZIONI");
     testo.setCharacterSize(WIDTH / 22);
@@ -449,14 +451,14 @@ void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text&
     n.setFont(font);
     n.setCharacterSize(WIDTH / 22);
     n.setFillColor(sf::Color::Black);
-    n.setString(std::to_string(n_player));
+    n.setString(std::to_string(nPlayer));
     sf::FloatRect nBounds = n.getLocalBounds();
     n.setOrigin(nBounds.width / 2, nBounds.height / 2);
     n.setPosition(sf::Vector2f(WIDTH / 2.55, HEIGHT * 0.5));
     c.setFont(font);
     c.setCharacterSize(WIDTH / 22);
     c.setFillColor(sf::Color::Black);
-    c.setString(std::to_string(n_cpu));
+    c.setString(std::to_string(nCpu));
     sf::FloatRect cBounds = n.getLocalBounds();
     c.setOrigin(cBounds.width / 2, cBounds.height / 2);
     c.setPosition(sf::Vector2f(WIDTH / 1.62, HEIGHT * 0.5));
@@ -466,7 +468,6 @@ void creazioneImpostazioni(sf::RectangleShape& shape, sf::Text& testo, sf::Text&
     bottoni.push_back(Bottone(HEIGHT * 1.01, HEIGHT * 0.52, WIDTH * 0.051, HEIGHT * 0.06, "<", sf::Color::Green));
     bottoni.push_back(Bottone(HEIGHT * 1.2, HEIGHT * 0.52, WIDTH * 0.051, HEIGHT * 0.06, ">", sf::Color::Green));
 }
-
 
 
 void creazionePausa() {
@@ -486,6 +487,36 @@ void creazioneCrediti(sf::Text& testo) {
 }
 
 
+void creazioneCasella(sf::Text& testoCasella, sf::RectangleShape& riquadroCasella) {
+    riquadroCasella.setSize(sf::Vector2f(WIDTH * 0.6, HEIGHT * 0.2));
+    riquadroCasella.setFillColor(sf::Color::White);
+    riquadroCasella.setOutlineColor(sf::Color::Black);
+    riquadroCasella.setOutlineThickness(2);
+    riquadroCasella.setOrigin(riquadroCasella.getSize().x / 2, riquadroCasella.getSize().y / 2);
+    riquadroCasella.setPosition(WIDTH * 2.55f / 4, HEIGHT * 3.4f / 4);
+
+    testoCasella.setFont(font);
+    testoCasella.setString(testoCaselle[players[1].casella]);
+    testoCasella.setCharacterSize(WIDTH / 35);
+    testoCasella.setFillColor(sf::Color::Black);
+
+    // L'origine del testo è l'angolo in alto a sinistra
+    testoCasella.setOrigin(0, 0);
+
+    // Calcola l'angolo in alto a sinistra del riquadro
+    sf::Vector2f riquadroPos = riquadroCasella.getPosition();
+    sf::Vector2f riquadroSize = riquadroCasella.getSize();
+    sf::Vector2f riquadroTopLeft = {
+        riquadroPos.x - riquadroSize.x / 2,
+        riquadroPos.y - riquadroSize.y / 2
+    };
+
+    // Posiziona il testo in alto a sinistra del riquadro
+    testoCasella.setPosition(riquadroTopLeft);
+}
+
+
+
 void drawMenu(sf::RectangleShape shape, sf::Text testo) {
     menuWP.draw(); // Disegna il background del menu
     window.draw(shape); // Disegna il rettangolo
@@ -502,12 +533,13 @@ void drawPartita() {
     for (auto& player : players) {
         player.draw();
 
-        drawCasella();
     }
 }
 
 
 void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text c, sf::Text numeroGiocatori) {
+    n.setString(std::to_string(nPlayer));
+    c.setString(std::to_string(nCpu));
     window.draw(shape); // Disegna il rettangolo di sfondo
     window.draw(testo); // Disegna il testo delle impostazioni
     window.draw(n); // Disegna il testo dei numeri
@@ -594,16 +626,9 @@ void drawDado() {
 }
 
 
-void drawCasella() {
-    // Disegna la casella in base al numero
-    sf::Text testoCasella;
-    testoCasella.setFont(font);
+void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella) {
     testoCasella.setString(testoCaselle[players[1].casella]);
-    testoCasella.setCharacterSize(WIDTH / 35);
-    testoCasella.setFillColor(sf::Color::Black);
-    sf::FloatRect textBounds = testoCasella.getLocalBounds();
-    testoCasella.setOrigin(textBounds.width / 2, textBounds.height / 2);
-    testoCasella.setPosition(players[0].x, players[0].y);
+    window.draw(riquadroCasella);
     window.draw(testoCasella);
 }
 
