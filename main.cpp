@@ -81,6 +81,7 @@ sf::Font font;
 struct Player {
     int numero;
     string nome;
+    sf::Text nomePlayer;
     float x, y;
     float initX, initY;
     int casella = 0;
@@ -104,6 +105,11 @@ struct Player {
         shape.setOutlineColor(sf::Color::Black);// Mette il colore del bordo pedone
         shape.setOutlineThickness(3);// Mette lo spessore al bordo pedone
         setPosition(x, y);
+
+        // Nome player
+        nomePlayer.setFont(font);
+        nomePlayer.setCharacterSize(WIDTH / 60);
+        nomePlayer.setString(nome);
     }
 
     void setPosition(float x, float y) {
@@ -112,6 +118,7 @@ struct Player {
 
     void draw() {
         window.draw(shape);
+        window.draw(nomePlayer);
     }
 };
 vector<Player> players;
@@ -521,12 +528,7 @@ void drawPartita() {
     drawDado(); // Chiamata per il dado
     for (auto& player : players) {
         // Mette il nome sopra al player
-        sf::Text nomePlayer;
-        nomePlayer.setFont(font);
-        nomePlayer.setCharacterSize(WIDTH / 60);
-        nomePlayer.setString(player.nome);
-        nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
-        window.draw(nomePlayer);
+        player.nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
         player.draw();
     }
 }
