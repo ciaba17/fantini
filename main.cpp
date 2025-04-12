@@ -10,22 +10,22 @@ using namespace std;
 
 const string testoCaselle[58] = {
     "Inizio",//inizio (casella 0)
-    "Pensavi fosse stato un tiro sfortunato 2 e 1, invece no! D'ora in poi ogni turno tira 4 dadi invece che 2, almeno finché non atterri su una casella pari",//1
-    "La professoressa Pellegrini ha riconosciuto il tuo impegno e ha deciso di premiarti, aumentando il tuo voto da 2 a 4. Avanza di due caselle!",//2
+    "Pensavi fosse stato un tiro sfortunato 2 e 1,\ninvece no! D'ora in poi ogni turno tira 4 dadi invece che 2,\nalmeno finché non atterri su una casella pari",//1
+    "La professoressa Pellegrini ha riconosciuto il tuo impegno e ha deciso di premiarti,\naumentando il tuo voto da 2 a 4. Avanza di due caselle!",//2
     "Che peccato! Torna indietro di 2 caselle.",//3
     "Una stradina molto tranquilla vicino a un laghetto.",//4
     "Una stradina molto tranquilla vicino a un laghetto.",//5
-    "Un inizio sfortunato, sei stato maledetto! Resta fermo un turno dopo ogni tiro di dadi, l'unico modo per spezzare il marchio è atterrare su una casella dispari.",//6
+    "Un inizio sfortunato, sei stato maledetto!\nResta fermo un turno dopo ogni tiro di dadi,\nl'unico modo per spezzare il marchio è atterrare su una casella dispari.",//6
     "Zani ti fa compagnia nelle caselle 7, 8 e 9",//7
     "Zani ti fa compagnia nelle caselle 7, 8 e 9",//8
     "Zani ti fa compagnia nelle caselle 7, 8 e 9",//9
-    "Peccato, sei inciampato sul pavimento rotto del Fermi, cadi al indietro di una casella!",//10
+    "Peccato, sei inciampato sul pavimento rotto del Fermi,\ncadi al indietro di una casella!",//10
     "Una casella vuota, che noia.",//11
     "Il karma non è dalla tua parte. Vai alla casella 5.",//12
-    "La casella 13 non perdona: qui è tutto un fallimento! Non hai altra scelta che tornare all’inizio. Riprova, sarà meglio la prossima volta.",//13
+    "La casella 13 non perdona: qui è tutto un fallimento!\nNon hai altra scelta che tornare all’inizio. Riprova, sarà meglio la prossima volta.",//13
     "Che c'è ti aspettavi succedesse qualcosa in ogni casella?",//14
     "Che fortuna, una fermata del Gello Express! Avanza fino alla casella 25.",//15
-    "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e balbetterai. Per i prossimi 3 turni tira un dado invece che 2",//16
+    "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e balbetterai.\nPer i prossimi 3 turni tira un dado invece che 2",//16
     "Goditi un attimo di quiete, fidati ti servira",//17
     "C'è fila in bagno, aspetta un turno.",//18
     "Tira 2 dadi, se esce lo stesso numero avanza di uno altrimenti torna indietro di 3 caselle!",//19
@@ -36,36 +36,36 @@ const string testoCaselle[58] = {
     "Ti fermi a accarezzare un gatto. Stai fermo un turno",//24
     "Oh! Il capolinea del Gello Express.",//25
     "Passi davanti a un bar, la tentazione di fermarti è forte ma vai avanti.",//26
-    "Iti riders crew ti ha approcciato, tira un dado, se minore di 4 resta 2 turni a subire i loro rumori molesti",//27
-    "È lunedì, lancia un dado, se minore di 6 hai finito le ore di assenza con Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
-    "Febbraio ha 29 giorni solo ogni 4 anni... E tu sei finito nella casella 29 proprio adesso. Aspetta che arrivi il prossimo anno bisestile e resta fermo 4 turni!",//29
-    "Devi andare alla palestra ma la stradina è di nuovo piena di fango, fai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
-    "Hey non puoi fermarti qui ci sono dei lavori in corso! Avanza di uno e non disturbare gli operai.",//31
-    "Mentre passi osservi il cantiere dei lavori sulla piscina dell'I.T.TS.",//32
+    "Iti riders crew ti ha approcciato, tira un dado,\nse minore di 4 resta 2 turni a subire i loro rumori molesti",//27
+    "È lunedì, lancia un dado, se minore di 6 hai finito le ore di assenza\ncon Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
+    "Febbraio ha 29 giorni solo ogni 4 anni...\nE tu sei finito nella casella 29 proprio adesso.\nAspetta che arrivi il prossimo anno bisestile\ne resta fermo 4 turni!",//29
+    "Devi andare alla palestra ma la stradina è di nuovo piena di fango,\nfai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
+    "Hey non puoi fermarti qui ci sono dei lavori in corso!\nAvanza di uno e non disturbare gli operai.",//31
+    "Mentre passi osservi il cantiere dei lavori sulla piscina dell'iti.",//32
     "Il signor Buongiorno ti da il buongiorno e con esso un aiuto emotivo. Tira di nuovo!",//33
     "Wow qui è pieno di diramazioni, ne scegli una e vai avanti.",//34
     "La strada è chiusa torna indietro e passa da un altra.",//35
-    "Un suino ti offre un passaggio in cambio di qualche carezza. Avanza di 5 caselle",//36
+    "Un suino ti offre un passaggio in cambio di qualche carezza.\nAvanza di 5 caselle",//36
     "Non succede nulla ma c'è un bel paesaggio quindi sei felice.",//37
     "Non succede nulla ma c'è un bel paesaggio quindi sei felice.",//38
-    "Una vespa ti entra nei pantaloni e ti punge un polpaccio, il dolore ti rallenta. Torna indietro di una casella",//39
-    "Sciaulino ti chiama su discord per vedere i reels, il suo unemployment ti contagia e perdi 2 ore su Instagram. Torna indietro di 2 caselle.",//40
+    "Una vespa ti entra nei pantaloni e ti punge un polpaccio,\nil dolore ti rallenta. Torna indietro di una casella",//39
+    "Sciaulino ti chiama su discord per vedere i reels,\nil suo unemployment ti contagia e perdi 2 ore su Instagram. Torna indietro di 2 caselle.",//40
     "Stai passando davanti a una casetta molto carina, bella vista.",//41
     "Stai passando davanti a una casetta molto carina, bella vista.",//42
-    "Vedi una ragazza venire verso di te, la tua paura per le donne ti fa correre per non farti approcciare. Avanza di due caselle.",//43
+    "Vedi una ragazza venire verso di te, la tua paura per le donne\nti fa correre per non farti approcciare. Avanza di due caselle.",//43
     "Tira un dado , se esce 4 vai avanti di due caselle altrimenti torna indietro di 2.",//44
     "Qui sei al sicuro, per ora.",//45
-    "La professoressa Ricci ti interroga, stai fermo 2 turni a parlare di Petrarca.",//46
-    "Ci sono 4 cartelli che ti dicono di andare a sinistra. Tira 4 dadi se esce 4 volte 1 sei così stupido da non vederne nessuno e vai a desta finendo nella casella 17.",//47
-    "Hai incontrato Pietro per strada, il solo vederlo ti ha dato la carica per aumentare il passo. Tira di nuovo.",//48
-    "C'è un muro che separa te e la vittoria, letteralmente, prova a scavalcarlo. Tira 4 dadi, se sono esce 4 volte 1 hai vinto, altrimenti continua per la strada normale.",//49
-    "Manca poco ormai, sei motivato a aumentare il passo. Avanza di una casella.",//50
+    "La professoressa Ricci ti interroga,\nstai fermo 2 turni a parlare di Petrarca.",//46
+    "Ci sono 4 cartelli che ti dicono di andare a sinistra.\nTira 4 dadi se esce 4 volte 1 sei così stupido da non vederne nessuno\ne vai a desta finendo nella casella 17.",//47
+    "Hai incontrato Pietro per strada, il solo vederlo ti ha dato\nla carica per aumentare il passo. Tira di nuovo.",//48
+    "C'è un muro che separa te e la vittoria, letteralmente, prova a scavalcarlo.\nTira 4 dadi, se sono esce 4 volte 1 hai vinto,\naltrimenti continua per la strada normale.",//49
+    "Manca poco ormai, sei motivato a aumentare il passo.\nAvanza di una casella.",//50
     "Ritieniti fortunato a essere qui...",//51
     "La casella 52 non mi piace, ritira i dadi.",//52
-    "Ti sei addormentato sul bus! Aspetta la prossima coincidenza stando fermo un turno.",//53
-    "Avanza di una casella, è un bene vero? Vero?",//54
-    "Sì, chiunque abbia progettato questo gioco ti vuole male. Torna indietro di 2 caselle.",//55
-    "Così vicino… eppure così lontano. Rimbalzi indietro di 10 caselle!",//56
+    "Ti sei addormentato sul bus!\nAspetta la prossima coincidenza stando fermo un turno.",//53
+    "Avanza di una casella,\nè un bene vero? Vero?",//54
+    "Sì, chiunque abbia progettato questo gioco ti vuole male.\nTorna indietro di 2 caselle.",//55
+    "Così vicino… eppure così lontano.\nRimbalzi indietro di 10 caselle!",//56
     "fine"//fine (casella dove va quando vinci)
 };
 
@@ -90,6 +90,7 @@ struct Player {
     bool turniAlterni = false;
     int turniZoppo = 0;
     int turniFermo = 0;
+    int nTurno=0;
     sf::Color colore;
     sf::CircleShape shape; // Rappresenta il giocatore con un cerchio
 
@@ -224,6 +225,8 @@ bool escPress = false;
 int totaleDadi;
 int nPlayer = 1;
 int nCpu = 3;
+int nDadi;
+int nTurno;
 vector<int> facciaDadi;
 
 
@@ -627,24 +630,55 @@ void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella) {
 
 
 int tiraDadi(int nDadi) {
+    std::vector<int> dadi(nDadi);
+    
     totaleDadi = 0;
 
     for (int i = 0; i < nDadi; i++) {
-        facciaDadi.push_back(rand() % 6 + 1); // Aggiunge il risultato del dado all'array
+        dadi[i] = rand() % 6 + 1;
+        facciaDadi.push_back(dadi[i]); // Aggiunge il risultato del dado all'array
         totaleDadi += facciaDadi[i];
     }
 
-
-    return 1; // PER ORA NON USATO
+    for (int i = 0; i < nDadi; i++) {
+        if (dadi[i] != dadi[0]) {
+            return 0;//NON TUTTI UGUALI
+        }
+    }
+    return 1; // TUTTI UGUALI
 }
 
 
 void turnoPlayer(Player& player) {
+
+
     cerr << endl << "sta giocando" << player.nome << endl;
+
+    player.nTurno++;
+
+    if (player.turniAlterni && player.nTurno % 2 == 0) {
+        return;
+    }
+
+    if (player.turniFermo>0)
+    {
+        player.turniFermo--;
+        return
+    }
+
+    if (player.turnoDoppio) {
+        nDadi = 4;
+    }
+    if (player.zoppo) {
+        nDadi = 1;
+    }
+    else {
+        nDadi = 2;
+    }
 
     // Tira i dadi
     facciaDadi.clear(); // Elimina i risultati dei dadi precedenti
-    tiraDadi(2); // Tira i dadi in base al numero di dadi 
+    tiraDadi(nDadi); // Tira i dadi in base al numero di dadi 
 
     player.casella += totaleDadi; // Aggiorna la casella del giocatore
     d1.draw();
