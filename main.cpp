@@ -10,7 +10,7 @@ using namespace std;
 
 const string testoCaselle[58] = {
     "Inizio",//inizio (casella 0)
-    "Pensavi fosse stato un tiro sfortunato 2 e 1,\ninvece no! D'ora in poi ogni turno tira 4 dadi invece che 2,\nalmeno finché non atterri su una casella pari",//1
+    "Pensavi fosse stato un tiro sfortunato 2 e 1, invece no!\n D'ora in poi ogni turnotira 4 dadi invece che 2,\nalmeno finché non atterri su una casella pari",//1
     "La professoressa Pellegrini ha riconosciuto il tuo impegno e ha deciso di premiarti,\naumentando il tuo voto da 2 a 4. Avanza di due caselle!",//2
     "Che peccato! Torna indietro di 2 caselle.",//3
     "Una stradina molto tranquilla vicino a un laghetto.",//4
@@ -22,13 +22,13 @@ const string testoCaselle[58] = {
     "Peccato, sei inciampato sul pavimento rotto del Fermi,\ncadi al indietro di una casella!",//10
     "Una casella vuota, che noia.",//11
     "Il karma non è dalla tua parte. Vai alla casella 5.",//12
-    "La casella 13 non perdona: qui è tutto un fallimento!\nNon hai altra scelta che tornare all’inizio. Riprova, sarà meglio la prossima volta.",//13
+    "La casella 13 non perdona: qui è tutto un fallimento!\nNon hai altra scelta che tornare all’inizio.\nRiprova, sarà meglio la prossima volta.",//13
     "Che c'è ti aspettavi succedesse qualcosa in ogni casella?",//14
     "Che fortuna, una fermata del Gello Express! Avanza fino alla casella 25.",//15
     "Che sfiga, ti sei slogato una caviglia, per un po' zoppicherai e balbetterai.\nPer i prossimi 3 turni tira un dado invece che 2",//16
     "Goditi un attimo di quiete, fidati ti servira",//17
     "C'è fila in bagno, aspetta un turno.",//18
-    "Tira 2 dadi, se esce lo stesso numero avanza di uno altrimenti torna indietro di 3 caselle!",//19
+    "Tira 2 dadi, se esce lo stesso numero avanza di uno\naltrimenti torna indietro di 3 caselle!",//19
     "Qui c'è un albero molto bello.",//20
     "Un signore per strada ti saluta, non succede nulla.",//21
     "MOV AX, 31",//22
@@ -38,7 +38,7 @@ const string testoCaselle[58] = {
     "Passi davanti a un bar, la tentazione di fermarti è forte ma vai avanti.",//26
     "Iti riders crew ti ha approcciato, tira un dado,\nse minore di 4 resta 2 turni a subire i loro rumori molesti",//27
     "È lunedì, lancia un dado, se minore di 6 hai finito le ore di assenza\ncon Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
-    "Febbraio ha 29 giorni solo ogni 4 anni...\nE tu sei finito nella casella 29 proprio adesso.\nAspetta che arrivi il prossimo anno bisestile\ne resta fermo 4 turni!",//29
+    "Febbraio ha 29 giorni solo ogni 4 anni...\nE tu sei finito nella casella 29 proprio adesso.\nAspetta che arrivi il prossimo anno bisestile e resta fermo 4 turni!",//29
     "Devi andare alla palestra ma la stradina è di nuovo piena di fango,\nfai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
     "Hey non puoi fermarti qui ci sono dei lavori in corso!\nAvanza di uno e non disturbare gli operai.",//31
     "Mentre passi osservi il cantiere dei lavori sulla piscina dell'iti.",//32
@@ -63,7 +63,7 @@ const string testoCaselle[58] = {
     "Ritieniti fortunato a essere qui...",//51
     "La casella 52 non mi piace, ritira i dadi.",//52
     "Ti sei addormentato sul bus!\nAspetta la prossima coincidenza stando fermo un turno.",//53
-    "Avanza di una casella,\nè un bene vero? Vero?",//54
+    "Avanza di una casella, è un bene vero? Vero?",//54
     "Sì, chiunque abbia progettato questo gioco ti vuole male.\nTorna indietro di 2 caselle.",//55
     "Così vicino… eppure così lontano.\nRimbalzi indietro di 10 caselle!",//56
     "fine"//fine (casella dove va quando vinci)
@@ -85,7 +85,6 @@ struct Player {
     float initX, initY;
     int casella = 0;
     bool staGiocando = false;
-    bool zoppo = false;
     bool turnoDoppio = false;
     bool turniAlterni = false;
     int turniZoppo = 0;
@@ -623,6 +622,7 @@ void drawDado() {
 
 
 void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella) {
+    testoCasella.setCharacterSize(36);
     testoCasella.setString(testoCaselle[players[1].casella]);
     window.draw(riquadroCasella);
     window.draw(testoCasella);
@@ -663,13 +663,14 @@ void turnoPlayer(Player& player) {
     if (player.turniFermo>0)
     {
         player.turniFermo--;
-        return
+        return;
     }
 
     if (player.turnoDoppio) {
         nDadi = 4;
     }
-    if (player.zoppo) {
+    if (player.turniZoppo>0) {
+        player.turniZoppo--;
         nDadi = 1;
     }
     else {
@@ -746,7 +747,6 @@ void controlloCasella(Player& player) {
         player.casella = 25;
         break;
     case 16:
-        player.zoppo = true;
         player.turniZoppo = 3;
         break;
     case 17:
@@ -792,7 +792,7 @@ void controlloCasella(Player& player) {
     case 32:
         break;
     case 33:
-        //
+        turnoPlayer(player);
         break;
     case 34:
         break;
@@ -831,7 +831,7 @@ void controlloCasella(Player& player) {
         //
         break;
     case 48:
-        //
+        turnoPlayer(player);
         break;
     case 49:
         //
