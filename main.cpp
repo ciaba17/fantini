@@ -233,7 +233,7 @@ int main() {
     mappa.sprite.setScale(0.8, 0.85); // Risetta la scala della mappa
     font.loadFromFile("data/arial.ttf"); // Carica il font
     // Crea i player
-    players.push_back(Player("Giocatore", sf::Color::Red, 1, WIDTH * 0.2745, HEIGHT * 2.6669 / 4));
+    players.push_back(Player("PLY 1", sf::Color::Red, 1, WIDTH * 0.2745, HEIGHT * 2.6669 / 4));
     players.push_back(Player("CPU 1", sf::Color::Blue, 2, WIDTH * 0.2995, HEIGHT * 2.6669 / 4));
     players.push_back(Player("CPU 2", sf::Color::Green, 3, WIDTH * 0.2745, HEIGHT * 2.796 / 4));
     players.push_back(Player("CPU 3", sf::Color::Yellow, 4, WIDTH * 0.2995, HEIGHT * 2.796 / 4));
@@ -247,7 +247,7 @@ int main() {
     sf::Text n;
     sf::Text c;
     sf::Text numeroGiocatori;
-    creazioneImpostazioni(testoImpostazioni, n, c, numeroGiocatori); // Crea le impostazioni
+    creazioneImpostazioni(testoImpostazioni, n, c, numeroGiocatori);
     // Caselle
     sf::Text testoCasella;
     sf::RectangleShape riquadroCasella;
@@ -256,7 +256,7 @@ int main() {
     sf::Text testoCrediti;
     creazioneCrediti(testoCrediti);
     // Pausa
-    creazionePausa(); // Crea la pausa
+    creazionePausa();
 
 
     while (window.isOpen()) {
@@ -312,34 +312,21 @@ void input(sf::Text& n, sf::Text& c) {
             impostazioni = false;
             partita = true;
         }
-        else if (suBottone(4)) { // Bottone <
+        else if (suBottone(4) && nPlayer > 1) { // Bottone < nPlayer
             nPlayer--;
-            if (nPlayer < 1) nPlayer = 1; // Limite minimo
-            n.setString(std::to_string(nPlayer));
-            sf::FloatRect nBounds = n.getLocalBounds();
-            n.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
-        else if (suBottone(5)) { // Bottone >
+        else if (suBottone(5) && nPlayer + nCpu < 4) { // Bottone > nPlayer
             nPlayer++;
-            if (nPlayer + nCpu > 4) nPlayer--; // Limite massimo (opzionale)
-            n.setString(std::to_string(nPlayer));
-            sf::FloatRect nBounds = n.getLocalBounds();
-            n.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
-        else if (suBottone(6)) { // Bottone <
+        else if (suBottone(6) && nCpu > 0) { // Bottone < nCpu
             nCpu--;
-            if (nCpu < 1) nCpu = 1; // Limite minimo
-            c.setString(std::to_string(nCpu));
-            sf::FloatRect nBounds = c.getLocalBounds();
-            c.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
-        else if (suBottone(7)) { // Bottone >
+        else if (suBottone(7) && nCpu + nPlayer < 4) { // Bottone > nCpu
             nCpu++;
-            if (nCpu + nPlayer > 4) nCpu--; // Limite massimo (opzionale)
-            c.setString(std::to_string(nCpu));
-            sf::FloatRect nBounds = c.getLocalBounds();
-            c.setOrigin(nBounds.width / 2, nBounds.height / 2);
         }
+
+
+
     }
 
     // Gestione input nella pausa
@@ -531,8 +518,14 @@ void drawPartita() {
     mappa.draw();
     drawDado(); // Chiamata per il dado
     for (auto& player : players) {
+        // Mette il nome sopra al player
+        sf::Text nomePlayer;
+        nomePlayer.setFont(font);
+        nomePlayer.setCharacterSize(WIDTH / 60);
+        nomePlayer.setString(player.nome);
+        nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
+        window.draw(nomePlayer);
         player.draw();
-
     }
 }
 
