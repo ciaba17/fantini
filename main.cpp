@@ -36,7 +36,7 @@ const string testoCaselle[58] = {
     "Oh! Il capolinea del Gello Express.",//25
     "Passi davanti a un bar, la tentazione di fermarti e' forte ma vai avanti.",//26
     "Iti riders crew ti ha approcciato, tira un dado,\nse minore di 4 resta 2 turni a subire i loro rumori molesti",//27
-    "E' lunedi', lancia un dado, se minore di 6 hai finito le ore di assenza\ncon Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
+    "E' lunedi', lancia un dado, se maggiore di 4 hai finito le ore di assenza\ncon Cellulari e stai fermo 3 turni a seguire la sua lezione.",//28
     "Febbraio ha 29 giorni solo ogni 4 anni...\nE tu sei finito nella casella 29 proprio adesso.\nAspetta che arrivi il prossimo anno bisestile e resta fermo 4 turni!",//29
     "Devi andare alla palestra ma la stradina e' di nuovo piena di fango,\nfai il giro per passare dal viale Adua. Torna indietro di 4 caselle.",//30
     "Hey non puoi fermarti qui ci sono dei lavori in corso!\nAvanza di uno e non disturbare gli operai.",//31
@@ -660,7 +660,7 @@ void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella) {
 
 int tiraDadi(int nDadi) {
     std::vector<int> dadi(nDadi);
-    
+
     totaleDadi = 0;
 
     for (int i = 0; i < nDadi; i++) {
@@ -669,14 +669,34 @@ int tiraDadi(int nDadi) {
         totaleDadi += facciaDadi[i];
     }
 
-    for (int i = 0; i < nDadi; i++) {
-        if (dadi[i] != dadi[0]) {
-            return 0; // NON TUTTI UGUALI
+    if (nDadi == 2) {// 19
+        for (int i = 0; i < nDadi; i++) {
+            if (dadi[i] != dadi[0]) {
+                return 0; // NON TUTTI UGUALI
+            }
         }
+        return 1; // TUTTI UGUALI
     }
-    return 1; // TUTTI UGUALI
+    else if (nDadi == 4) {// 47 49
+        for (int i = 0; i < nDadi; i++) {
+            if (dadi[i] != 1) {
+                return 0; // NON TUTTI UGUALI
+            }
+        }
+        return 2; // TUTTI UGUALI
+    }
+    else if (nDadi == 1) {// 27 28 44
+        if (totaleDadi == 4)
+            return 3;
+        else if (totaleDadi < 4)
+            return 4;
+        else if (totaleDadi > 4)
+            return 5;
+    }
+    else {
+        return 0;
+    }
 }
-
 
 void turnoPlayer(Player& player) {
 
@@ -783,7 +803,10 @@ void controlloCasella(Player& player) {
         player.turniFermo = 1;
         break;
     case 19:
-        //
+        if (tiraDadi(2) == 1)
+            player.casella += 1;
+        else
+            player.casella -= 3;
         break;
     case 20:
         break;
@@ -803,10 +826,12 @@ void controlloCasella(Player& player) {
     case 26:
         break;
     case 27:
-        //
+        if (tiraDadi(1) == 4)
+            player.turniFermo = 2;
         break;
     case 28:
-        //
+        if (tiraDadi(1) == 5)
+            player.turniFermo = 3;
         break;
     case 29:
         player.turniFermo = 4;
@@ -848,7 +873,10 @@ void controlloCasella(Player& player) {
         player.casella += 2;
         break;
     case 44:
-        //
+        if (tiraDadi(1) == 3)
+            player.casella += 2;
+        else
+            player.casella -= 2;
         break;
     case 45:
         break;
@@ -856,13 +884,15 @@ void controlloCasella(Player& player) {
         player.turniFermo = 2;
         break;
     case 47:
-        //
+        if (tiraDadi(4) == 2)
+            player.casella == 17;
         break;
     case 48:
         turnoPlayer(player);
         break;
     case 49:
-        //
+        if (tiraDadi(4) == 2)
+            player.casella == 57;
         break;
     case 50:
         player.casella += 1;
@@ -870,7 +900,7 @@ void controlloCasella(Player& player) {
     case 51:
         break;
     case 52:
-        //
+        turnoPlayer(player);
         break;
     case 53:
         player.turniFermo = 1;
