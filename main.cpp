@@ -228,11 +228,10 @@ void drawDado();
 void drawCasella(sf::Text testoCasella, sf::RectangleShape riquadroCasella);
 void drawImpostazioni(sf::RectangleShape shape, sf::Text testo, sf::Text n, sf::Text c, sf::Text numeroGiocatori);
 void input(sf::Text& n, sf::Text& c);
-void update();
+void update(sf::Text testoCasella, sf::RectangleShape riquadroCasella);
 void turnoPlayer(Player& player);
 void controlloCasella(Player& player);
 void vittoria(Player& player);
-void sleep(int ms);
 
 bool crediti = false;
 bool menu = true;
@@ -245,6 +244,7 @@ int nPlayer = 1;
 int nCpu = 3;
 int nDadi;
 int nTurno;
+bool chiediProssimoTurno = false;
 vector<int> facciaDadi;
 string testoCasellaStr;
 
@@ -289,7 +289,7 @@ int main() {
             input(n, c);
         }
 
-        update();
+        update(testoCasella, riquadroCasella);
 
         // Draw
         window.clear(sf::Color::Cyan);
@@ -334,16 +334,21 @@ void input(sf::Text& n, sf::Text& c) {
         if (suBottone(3)) { // Bottone START nelle impostazioni
             impostazioni = false;
             partita = true;
+
             for (int i = 0; i < nPlayer; i++) {
                 players[i].isCpu = false; // Imposta i player come umani
                 players[i].nomePlayer.setString("PLY " + to_string(i+1)); // Imposta il nome del player
             }
+
             for (int i = 0; i < nCpu; i++) {
                 players[i+nPlayer].nomePlayer.setString("CPU " + to_string(i+1)); // Imposta il nome della cpu
             }
+
             for (int i = 0; i < 4 - (nPlayer + nCpu); i++) {
                 players.pop_back(); // Rimuove i giocatori non selezionati
             }
+
+            // Imposta il colore dei nomi
             for (auto& player : players) {
                 sf::Color coloreNome;
                 if (!player.isCpu) {
@@ -368,9 +373,6 @@ void input(sf::Text& n, sf::Text& c) {
         else if (suBottone(7) && nCpu + nPlayer < 4) { // Bottone > nCpu
             nCpu++;
         }
-
-
-
     }
 
     // Gestione input nella pausa
@@ -415,7 +417,7 @@ void input(sf::Text& n, sf::Text& c) {
 }
 
 
-void update() {
+void update(sf::Text testoCasella, sf::RectangleShape riquadroCasella) {
     if (partita) {
         // Controlla se e di chi è il turno
         for (auto& player : players) {
@@ -430,16 +432,43 @@ void update() {
             }
         }
 
+        // Se il giocatore è umano, aspetta un input prima di passare al prossimo turno
+        if (std::any_of(players.begin(), players.end(), [](const Player& p) { return p.staGiocando && !p.isCpu; })) {
+            sf::Text prompt;
+            prompt.setFont(font);
+            prompt.setString("Premi SPAZIO per continuare");
+            prompt.setCharacterSize(WIDTH / 41);
+            prompt.setFillColor(sf::Color::Black);
+            prompt.setPosition(WIDTH * 0.009, HEIGHT * 0.5);
+
+            // Mostra il messaggio e aspetta un input
+            while (true) {
+                window.clear(sf::Color::Cyan);
+                drawPartita();
+                drawCasella(testoCasella, riquadroCasella);
+                window.draw(prompt);
+                window.display();
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                    break; // Esce dal loop quando viene premuto il tasto SPAZIO
+                }
+            }
+        }
+
         for (auto& player : players) {
             if (player.staGiocando) {
-                sleep(1000);
                 player.staGiocando = false;
+                sf::sleep(sf::milliseconds(500)); // Aspetta prima di passare al prossimo turno
 
                 if (player.numero % players.size() != 0) {
                     players[(player.numero) % players.size()].staGiocando = true;
                     break;
                 }
             }
+        }
+        // Controlla se nessun player sta giocando e quindi toglie il testo nella casella
+        if (std::none_of(players.begin(), players.end(), [](const Player& p) { return p.staGiocando; })) {
+            testoCasellaStr = "";
         }
     }
 }
@@ -563,8 +592,14 @@ void drawPartita() {
     drawDado(); // Chiamata per il dado
     for (auto& player : players) {
         // Mette il nome sopra al player
-        player.nomeShape.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
-        player.nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
+        if (player.casella >= 19 && player.casella <= 27) {
+            player.nomeShape.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y + HEIGHT * 0.04));
+            player.nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y + HEIGHT * 0.04));
+        }
+        else {
+            player.nomeShape.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
+            player.nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
+        }
         player.draw();
     }
 }
@@ -995,9 +1030,5 @@ bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
 void vittoria(Player& player) {
     partita = false;
     sfondoVittoria.draw();
-}
-
-void sleep(int ms) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
