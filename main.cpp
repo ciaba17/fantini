@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <thread>
-#include <chrono>
 
 using namespace std;
 
@@ -75,7 +74,7 @@ const float HEIGHT = 1080;
 
 sf::RenderWindow window(sf::VideoMode(1920, 1080), "Gioco dell'oca"); // Crea l'oggetto finestra
 sf::Event event; // Crea gestore eventi
-sf::Font font;
+sf::Font font; // Crea l'oggetto font
 
 
 struct Player {
@@ -321,16 +320,28 @@ void input(sf::Text& n, sf::Text& c) {
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && impostazioni) {
-        if (suBottone(3)) { // Bottone START nel menu
+        if (suBottone(3)) { // Bottone START nelle impostazioni
             impostazioni = false;
             partita = true;
             for (int i = 0; i < nPlayer; i++) {
-                players[i].isCpu = false; // Il primo giocatore inizia il turno
+                players[i].isCpu = false; // Imposta il numero di player e cpu
             }
             for (int i = 0; i < 4 - (nPlayer + nCpu); i++) {
                 players.pop_back(); // Rimuove i giocatori non selezionati
             }
+            for (auto player : players) {
+                sf::Color coloreNome;
+                if (!player.isCpu) {
+                    coloreNome = sf::Color(255, 165, 0); // Colore del nome del giocatore (arancione)
+
+                }
+                else {
+                    coloreNome = sf::Color(0, 0, 0); // Colore del nome della cpu (altro colore)
+                }
+                player.nomePlayer.setFillColor(coloreNome);
+            }
         }
+
         else if (suBottone(4) && nPlayer > 1) { // Bottone < nPlayer
             nPlayer--;
         }
@@ -396,10 +407,12 @@ void update() {
         for (auto& player : players) {
             if (player.staGiocando) {
                 turnoPlayer(player);
-                if (!player.isCpu)
+                if (!player.isCpu) {
                     testoCasellaStr = testoCaselle[player.casella]; // Imposta il testo della casella
-                else
+                }
+                else {
                     testoCasellaStr = "La CPU sta giocando";
+                }
             }
         }
 
