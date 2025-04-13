@@ -81,6 +81,7 @@ struct Player {
     int numero;
     string nome;
     sf::Text nomePlayer;
+    sf::RectangleShape nomeShape;
     float x, y;
     float initX, initY;
     int casella = 0;
@@ -112,6 +113,12 @@ struct Player {
         nomePlayer.setFont(font);
         nomePlayer.setCharacterSize(WIDTH / 60);
         nomePlayer.setString(nome);
+
+        nomeShape.setSize(sf::Vector2f(nomePlayer.getLocalBounds().width + 6, nomePlayer.getLocalBounds().height + 10));
+        nomeShape.setFillColor(sf::Color(255, 255, 255, 200)); // Colore bianco semitrasparente
+        nomeShape.setOutlineColor(sf::Color::Black);
+        nomeShape.setOutlineThickness(2);
+        nomeShape.setPosition(x, y - HEIGHT * 0.05);
     }
 
     void setPosition(float x, float y) {
@@ -120,6 +127,7 @@ struct Player {
 
     void draw() {
         window.draw(shape);
+        window.draw(nomeShape);
         window.draw(nomePlayer);
     }
 };
@@ -327,7 +335,11 @@ void input(sf::Text& n, sf::Text& c) {
             impostazioni = false;
             partita = true;
             for (int i = 0; i < nPlayer; i++) {
-                players[i].isCpu = false; // Imposta il numero di player e cpu
+                players[i].isCpu = false; // Imposta i player come umani
+                players[i].nomePlayer.setString("PLY " + to_string(i+1)); // Imposta il nome del player
+            }
+            for (int i = 0; i < nCpu; i++) {
+                players[i+nPlayer].nomePlayer.setString("CPU " + to_string(i+1)); // Imposta il nome della cpu
             }
             for (int i = 0; i < 4 - (nPlayer + nCpu); i++) {
                 players.pop_back(); // Rimuove i giocatori non selezionati
@@ -338,7 +350,7 @@ void input(sf::Text& n, sf::Text& c) {
                     coloreNome = sf::Color(255, 165, 0); // Colore del nome del giocatore (arancione)
                 }
                 else {
-                    coloreNome = sf::Color(0, 0, 0); // Colore del nome della cpu (altro colore)
+                    coloreNome = sf::Color(0, 0, 0); // Colore del nome della cpu (giallo)
                 }
                 player.nomePlayer.setFillColor(coloreNome);
             }
@@ -551,6 +563,7 @@ void drawPartita() {
     drawDado(); // Chiamata per il dado
     for (auto& player : players) {
         // Mette il nome sopra al player
+        player.nomeShape.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
         player.nomePlayer.setPosition(sf::Vector2f(player.x - WIDTH * 0.015, player.y - HEIGHT * 0.04));
         player.draw();
     }
@@ -707,6 +720,7 @@ void turnoPlayer(Player& player) {
 
     player.casella += totaleDadi; // Aggiorna la casella del giocatore
     controlloCasella(player);
+    
 }
 
 
