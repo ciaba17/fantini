@@ -763,7 +763,7 @@ void controlloCasella(Player& player) {
     // Gestisci il comportamento quando un giocatore finisce su una casella
 
     if (player.casella > 56) {
-        player.casella = 57;
+        vittoria(player);
     }
 
     if (player.casella % 2 == 0) {
@@ -778,8 +778,6 @@ void controlloCasella(Player& player) {
     }
 
     switch (player.casella) {
-    case 0:
-        break;
     case 1:
         player.turnoDoppio = true;
         break;
@@ -789,23 +787,11 @@ void controlloCasella(Player& player) {
     case 3:
         player.casella -= 2;
         break;
-    case 4:
-        break;
-    case 5:
-        break;
     case 6:
         player.turniAlterni = true;
         break;
-    case 7:
-        break;
-    case 8:
-        break;
-    case 9:
-        break;
     case 10:
         player.casella -= 1;
-        break;
-    case 11:
         break;
     case 12:
         player.casella = 5;
@@ -813,15 +799,11 @@ void controlloCasella(Player& player) {
     case 13:
         player.casella = 0;
         break;
-    case 14:
-        break;
     case 15:
         player.casella = 25;
         break;
     case 16:
         player.turniZoppo = 3;
-        break;
-    case 17:
         break;
     case 18:
         player.turniFermo = 1;
@@ -834,10 +816,6 @@ void controlloCasella(Player& player) {
             player.casella -= 3;
         }
         break;
-    case 20:
-        break;
-    case 21:
-        break;
     case 22:
         player.casella = 31;
         break;
@@ -846,10 +824,6 @@ void controlloCasella(Player& player) {
         break;
     case 24:
         player.turniFermo = 1;
-        break;
-    case 25:
-        break;
-    case 26:
         break;
     case 27:
         tiraDadi(1);
@@ -871,8 +845,6 @@ void controlloCasella(Player& player) {
     case 31:
         player.casella += 1;
         break;
-    case 32:
-        break;
     case 33:
         turnoPlayer(player);
         break;
@@ -884,19 +856,11 @@ void controlloCasella(Player& player) {
     case 36:
         player.casella += 5;
         break;
-    case 37:
-        break;
-    case 38:
-        break;
     case 39:
         player.casella -= 1;
         break;
     case 40:
         player.casella -= 2;
-        break;
-    case 41:
-        break;
-    case 42:
         break;
     case 43:
         player.casella += 2;
@@ -909,8 +873,6 @@ void controlloCasella(Player& player) {
         else {
             player.casella -= 2;
         }
-        break;
-    case 45:
         break;
     case 46:
         player.turniFermo = 2;
@@ -931,9 +893,8 @@ void controlloCasella(Player& player) {
     case 50:
         player.casella += 1;
         break;
-    case 51:
-        break;
     case 52:
+        player.casella -= totaleDadi;
         turnoPlayer(player);
         break;
     case 53:
@@ -949,7 +910,6 @@ void controlloCasella(Player& player) {
         player.casella -= 10;
         break;
     default:
-        vittoria(player);
         break;
     }
 
