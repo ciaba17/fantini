@@ -195,6 +195,7 @@ struct Sprite {
 };
 // Crea gli sprites
 Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
+Sprite sfondoVittoria(WIDTH / 2, HEIGHT / 2, 1, "data/vittoria.jpg");
 Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.435 / 4, 0.8, "data/mappa.png");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
@@ -222,6 +223,7 @@ void input(sf::Text& n, sf::Text& c);
 void update();
 void turnoPlayer(Player& player);
 void controlloCasella(Player& player);
+void vittoria(Player& player);
 void sleep(int ms);
 
 bool crediti = false;
@@ -428,12 +430,6 @@ void update() {
             }
         }
     }
-
-    cerr << players[0].casella << '\t';
-    cerr << players[1].casella << '\t';
-    cerr << players[2].casella << '\t';
-    cerr << players[3].casella << '\t';
-    cerr << endl;
 }
 
 
@@ -915,6 +911,7 @@ void controlloCasella(Player& player) {
         player.casella -= 10;
         break;
     default:
+        vittoria(player);
         break;
     }
 
@@ -992,6 +989,10 @@ bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
     return false;
 }
 
+void vittoria(Player& player) {
+    partita = false;
+    sfondoVittoria.draw();
+}
 
 void sleep(int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
