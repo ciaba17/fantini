@@ -319,6 +319,7 @@ void input(sf::Text& n, sf::Text& c) {
         }
     }
 
+    // Gestione input nelle impostazioni
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && impostazioni) {
         if (suBottone(3)) { // Bottone START nelle impostazioni
             impostazioni = false;
@@ -329,11 +330,10 @@ void input(sf::Text& n, sf::Text& c) {
             for (int i = 0; i < 4 - (nPlayer + nCpu); i++) {
                 players.pop_back(); // Rimuove i giocatori non selezionati
             }
-            for (auto player : players) {
+            for (auto& player : players) {
                 sf::Color coloreNome;
                 if (!player.isCpu) {
                     coloreNome = sf::Color(255, 165, 0); // Colore del nome del giocatore (arancione)
-
                 }
                 else {
                     coloreNome = sf::Color(0, 0, 0); // Colore del nome della cpu (altro colore)
@@ -421,8 +421,8 @@ void update() {
                 sleep(1000);
                 player.staGiocando = false;
 
-                if (player.numero % 4 != 0) {
-                    players[(player.numero) % 4].staGiocando = true;
+                if (player.numero % players.size() != 0) {
+                    players[(player.numero) % players.size()].staGiocando = true;
                     break;
                 }
             }
@@ -617,36 +617,34 @@ void drawDado() {
             break;
         }
 
-        // Disegna la faccia del dado
-        if (!players[0].staGiocando || players[1].staGiocando || players[2].staGiocando || players[3].staGiocando) { // Se è il turno di un giocatore
-            switch (facciaDadi[i]) {
-            case 1:
-                d1.setPosition(x, y);
-                d1.draw();
-                break;
-            case 2:
-                d2.setPosition(x, y);
-                d2.draw();
-                break;
-            case 3:
-                d3.setPosition(x, y);
-                d3.draw();
-                break;
-            case 4:
-                d4.setPosition(x, y);
-                d4.draw();
-                break;
-            case 5:
-                d5.setPosition(x, y);
-                d5.draw();
-                break;
-            case 6:
-                d6.setPosition(x, y);
-                d6.draw();
-                break;
-            default:
-                break;
-            }
+    // Disegna la faccia del dado
+        switch (facciaDadi[i]) {
+        case 1:
+            d1.setPosition(x, y);
+            d1.draw();
+            break;
+        case 2:
+            d2.setPosition(x, y);
+            d2.draw();
+            break;
+        case 3:
+            d3.setPosition(x, y);
+            d3.draw();
+            break;
+        case 4:
+            d4.setPosition(x, y);
+            d4.draw();
+            break;
+        case 5:
+            d5.setPosition(x, y);
+            d5.draw();
+            break;
+        case 6:
+            d6.setPosition(x, y);
+            d6.draw();
+            break;
+        default:
+            break;
         }
     }
 }
@@ -686,6 +684,8 @@ void turnoPlayer(Player& player) {
     cerr << endl << "sta giocando" << player.nome << endl;
 
     player.nTurno++;
+    nDadi = 2;
+
 
     if (player.turniAlterni && player.nTurno % 2 == 0) {
         return;
@@ -698,22 +698,19 @@ void turnoPlayer(Player& player) {
     }
 
     if (player.turnoDoppio) {
-        nDadi = 4;
+        nDadi *= 2;
     }
     if (player.turniZoppo>0) {
         player.turniZoppo--;
-        nDadi = 1;
+        nDadi /= 2;
     }
-    else {
-        nDadi = 2;
-    }
+
 
     // Tira i dadi
     facciaDadi.clear(); // Elimina i risultati dei dadi precedenti
     tiraDadi(nDadi); // Tira i dadi in base al numero di dadi 
 
     player.casella += totaleDadi; // Aggiorna la casella del giocatore
-    d1.draw();
     controlloCasella(player);
 }
 
