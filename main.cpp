@@ -542,7 +542,9 @@ void creazionePausa() {
 
 void creazioneCrediti(sf::Text& testo) {
     testo.setFont(font);
-    testo.setString("GRAZIE PER STAR GIOCANDO AL NOSTRO GIOCO DELL'OCA  By: \n \n  - Totti Alberto - \n  - Cai Dal Pino Gabriele - \n  - Arinci Andrea -");
+    testo.setFillColor(sf::Color::Black);
+    testo.setCharacterSize(WIDTH / 35);
+    testo.setString("GRAZIE PER STAR GIOCANDO AL NOSTRO GIOCO DELL'OCA  By:\n \n  - Totti Alberto - \n  - Cai Dal Pino Gabriele - \n  - Arinci Andrea -\n \n \n ISTRUZIONI: \n\n 1) Scegli il numero di giocatori e cpu \n 2) Clicca su INIZIA per iniziare la partita \n 3) Clicca sullo schermo per iniziare la serie di turni \n 4) Segui le istruzioni delle caselle \n 5) Buona fortuna!");
 
 }
 
