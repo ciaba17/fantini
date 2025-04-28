@@ -91,7 +91,7 @@ struct Player {
     bool isCpu;
     int turniZoppo = 0;
     int turniFermo = 0;
-    int nTurno=0;
+    int nTurno = 0;
     sf::Color colore;
     sf::CircleShape shape; // Rappresenta il giocatore con un cerchio
 
@@ -203,7 +203,7 @@ struct Sprite {
 };
 // Crea gli sprites
 Sprite menuWP(WIDTH / 2, HEIGHT / 2, 1, "data/menuWP.jpg");
-Sprite sfondoVittoria(WIDTH / 2, HEIGHT / 2, 1, "data/vittoria.jpg");
+Sprite sfondoVittoria(WIDTH / 2, HEIGHT / 2, 1, "data/sfondoVittoria.jpg");
 Sprite mappa(WIDTH * 2.65 / 4, HEIGHT * 1.435 / 4, 0.8, "data/mappa.png");
 Sprite d1(0, 0, 0.4, "data/d1.png");
 Sprite d2(0, 0, 0.4, "data/d2.png");
@@ -219,7 +219,7 @@ void creazioneMenu(sf::RectangleShape& shape, sf::Text& testo);
 void creazioneImpostazioni(sf::Text& testo, sf::Text& n, sf::Text& c, sf::Text& numeroGiocatori);
 void creazionePausa();
 void creazioneCrediti(sf::Text& testo);
-void creazioneCasella(sf::Text& testoCasella, sf::RectangleShape& riquadroCasella);    
+void creazioneCasella(sf::Text& testoCasella, sf::RectangleShape& riquadroCasella);
 void drawMenu(sf::RectangleShape shape, sf::Text testo);
 void drawPartita();
 void drawPausa(sf::RectangleShape shape);
@@ -342,11 +342,11 @@ void input(sf::Text& n, sf::Text& c) {
 
             for (int i = 0; i < nPlayer; i++) {
                 players[i].isCpu = false; // Imposta i player come umani
-                players[i].nomePlayer.setString("PLY " + to_string(i+1)); // Imposta il nome del player
+                players[i].nomePlayer.setString("PLY " + to_string(i + 1)); // Imposta il nome del player
             }
 
             for (int i = 0; i < nCpu; i++) {
-                players[i+nPlayer].nomePlayer.setString("CPU " + to_string(i+1)); // Imposta il nome della cpu
+                players[i + nPlayer].nomePlayer.setString("CPU " + to_string(i + 1)); // Imposta il nome della cpu
             }
 
             for (int i = 0; i < 4 - (nPlayer + nCpu); i++) {
@@ -647,7 +647,7 @@ void drawCrediti(sf::Text testo) {
 void drawDado() {
     int x, y;
 
-    
+
     // Itera per ogni dado
     for (int i = 0; i < facciaDadi.size(); i++) {
         // Imposta la posizione del dado in base al numero del dado disegnato
@@ -671,7 +671,7 @@ void drawDado() {
             break;
         }
 
-    // Disegna la faccia del dado
+        // Disegna la faccia del dado
         switch (facciaDadi[i]) {
         case 1:
             d1.setPosition(x, y);
@@ -725,7 +725,7 @@ int tiraDadi(int nDadi) {
 
     for (int i = 0; i < nDadi; i++) {
         if (dadi[i] != dadi[0]) {
-                return 0; // NON TUTTI UGUALI
+            return 0; // NON TUTTI UGUALI
         }
     }
     return 1; // TUTTI UGUALI
@@ -744,7 +744,7 @@ void turnoPlayer(Player& player) {
         return;
     }
 
-    if (player.turniFermo>0)
+    if (player.turniFermo > 0)
     {
         player.turniFermo--;
         return;
@@ -753,7 +753,7 @@ void turnoPlayer(Player& player) {
     if (player.turnoDoppio) {
         nDadi *= 2;
     }
-    if (player.turniZoppo>0) {
+    if (player.turniZoppo > 0) {
         player.turniZoppo--;
         nDadi /= 2;
     }
@@ -765,7 +765,7 @@ void turnoPlayer(Player& player) {
 
     player.casella += totaleDadi; // Aggiorna la casella del giocatore
     controlloCasella(player);
-    
+
 }
 
 
@@ -1004,8 +1004,6 @@ void drawVittoria() {
     sf::RectangleShape riquadroVittoria;
     bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.63, WIDTH * 0.12, HEIGHT * 0.055, "ESCI", sf::Color::Yellow));
 
-    cerr << endl << "ha vinto " << playerVincitoreStr << endl;
-    
     testoVittoria.setFont(font);
     testoVittoria.setString("Ha vinto " + playerVincitoreStr);
     testoVittoria.setCharacterSize(WIDTH / 35);
