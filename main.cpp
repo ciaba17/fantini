@@ -231,13 +231,14 @@ void input(sf::Text& n, sf::Text& c);
 void update(sf::Text testoCasella, sf::RectangleShape riquadroCasella);
 void turnoPlayer(Player& player);
 void controlloCasella(Player& player);
-void vittoria(Player& player);
+void drawVittoria();
 
 bool crediti = false;
 bool menu = true;
 bool partita = false;
 bool impostazioni = false;
 bool pausa = false;
+bool vittoria = false;
 bool escPress = false;
 int totaleDadi;
 int nPlayer = 1;
@@ -247,6 +248,7 @@ int nTurno;
 bool chiediProssimoTurno = false;
 vector<int> facciaDadi;
 string testoCasellaStr;
+string playerVincitoreStr;
 
 
 
@@ -308,6 +310,9 @@ int main() {
         }
         else if (pausa) { // Disegna la pausa
             drawPausa(shape);
+        }
+        else if (vittoria) {
+            drawVittoria();
         }
         window.display();
     }
@@ -390,6 +395,9 @@ void input(sf::Text& n, sf::Text& c) {
         }
     }
 
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && vittoria) {
+        window.close();
+    }
 
     else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && partita) { // Input per lanciare i dadi
         players[0].staGiocando = true; // Il giocatore 1 inizia il turno
@@ -765,7 +773,9 @@ void controlloCasella(Player& player) {
     // Gestisci il comportamento quando un giocatore finisce su una casella
 
     if (player.casella > 56) {
-        vittoria(player);
+        playerVincitoreStr = player.nome;
+        partita = false;
+        vittoria = true;
     }
 
     if (player.casella % 2 == 0) {
@@ -989,8 +999,38 @@ bool suBottone(int nBottone) { // Controlla se il mouse è sopra un bottone
     return false;
 }
 
-void vittoria(Player& player) {
-    partita = false;
+void drawVittoria() {
+    sf::Text testoVittoria;
+    sf::RectangleShape riquadroVittoria;
+    bottoni.push_back(Bottone(WIDTH / 2, HEIGHT * 0.63, WIDTH * 0.12, HEIGHT * 0.055, "ESCI", sf::Color::Yellow));
+
+    cerr << endl << "ha vinto " << playerVincitoreStr << endl;
+    
+    testoVittoria.setFont(font);
+    testoVittoria.setString("Ha vinto " + playerVincitoreStr);
+    testoVittoria.setCharacterSize(WIDTH / 35);
+    testoVittoria.setFillColor(sf::Color::Black);
+
+    // Imposta una dimensione al riquadro
+    riquadroVittoria.setSize(sf::Vector2f(WIDTH / 2, HEIGHT / 4));
+    riquadroVittoria.setFillColor(sf::Color::White);
+    riquadroVittoria.setOutlineThickness(5);
+    riquadroVittoria.setOutlineColor(sf::Color::Black);
+
+    // Centra il riquadro nella finestra
+    riquadroVittoria.setOrigin(riquadroVittoria.getSize() / 2.f);
+    riquadroVittoria.setPosition(WIDTH / 2.f, HEIGHT / 2.f);
+
+    // Adatta l'origine del testo al centro del suo rettangolo
+    sf::FloatRect bounds = testoVittoria.getLocalBounds();
+    testoVittoria.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+
+    // Posiziona il testo al centro del riquadro
+    testoVittoria.setPosition(riquadroVittoria.getPosition());
+
     sfondoVittoria.draw();
+    window.draw(riquadroVittoria);
+    window.draw(testoVittoria);
+    bottoni[11].draw();
 }
 
